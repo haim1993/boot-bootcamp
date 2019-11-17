@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 public class SimpleServer {
     public static int VISITS_COUNTER = 1;
     public static int STATUS_CODE_OKAY = 200;
-    public static int PORT = 9000;
+    public static int PORT = 8080;
 
 
     public static Logger logger;

@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'application'
 }
 
@@ -12,10 +13,23 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     compile group: 'io.logz.log4j2', name: 'logzio-log4j2-appender', version: '1.0.5'
 
     // Removes generated errors :P
     compile 'org.slf4j:slf4j-api:1.7.5'
-    compile 'org.slf4j:slf4j-log4j12:1.7.5'
+    compile 'org.slf4j:slf4j-simple:1.6.4'
+
 }
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+
+    // What the fuck is this?
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+
+
