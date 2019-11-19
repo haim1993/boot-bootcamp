@@ -36,3 +36,6 @@ docker-compose up --build
 
 The endpoint of the HAProxy,
 [localhost:8080/boot-bootcamp](http://localhost:8080/boot-bootcamp)
+
+***!IMPORTANT***
+> To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file (src/main/resources/log4j2.xml)
