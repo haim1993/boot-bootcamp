@@ -2,6 +2,20 @@
 
 The project builds and runs an HAProxy container to load balance instances of a simple server application that ships dummy logs to the logz.io platform.
 
+### Tasks
+**Part 1**
+- Create new repository “boot-bootcamp” in your personal GitHub account
+- Create new JAVA project
+- Push your project to your github repository
+- Use Gradle as a build tool
+- Include HTTP Server library (choose as you wish)
+- Your server should have a GET /boot-bootcamp endpoint
+
+**Part 2**
+- Run boot-bootcamp as a Docker container 
+- Run 2 instances of boot-bootcamp behind a load-balancer. Use docker-compose
+
+
 ### Dependencies
 You must have Docker installed on your system to build and run the containers.
 
