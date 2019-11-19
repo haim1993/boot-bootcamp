@@ -2,6 +2,11 @@
 
 The project builds and runs an HAProxy container to load balance instances of a simple server application that ships dummy logs to the logz.io platform.
 
+
+### Dependencies
+You must have Docker installed on your system to build and run the containers.
+
+
 ### Tasks
 **Part 1**
 - Create new repository “boot-bootcamp” in your personal GitHub account
@@ -14,10 +19,6 @@ The project builds and runs an HAProxy container to load balance instances of a 
 **Part 2**
 - Run boot-bootcamp as a Docker container 
 - Run 2 instances of boot-bootcamp behind a load-balancer. Use docker-compose
-
-
-### Dependencies
-You must have Docker installed on your system to build and run the containers.
 
 
 ### How to build
