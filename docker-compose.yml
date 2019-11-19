@@ -1,0 +1,18 @@
+version: '3'
+services:
+    myserver1:
+        build:
+            context: .
+            dockerfile: Dockerfile
+    myserver2:
+        build:
+            context: .
+            dockerfile: Dockerfile
+    haproxy:
+        build: ./haproxy
+        ports:
+            - "8080:8080"
+        depends_on:
+            - myserver1
+            - myserver2
+      

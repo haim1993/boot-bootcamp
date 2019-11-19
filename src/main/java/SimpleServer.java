@@ -5,7 +5,9 @@ import java.io.OutputStream;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Date;
+import java.nio.charset.Charset;
+import java.util.UUID;
+import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +20,13 @@ public class SimpleServer {
 
 
     public static Logger logger;
+    public static String seed;
 
     public static void main(String[] args) throws IOException {
         logger = LogManager.getLogger(SimpleServer.class);
+
+        // Generate random seed
+        seed = UUID.randomUUID().toString();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         HttpContext context = server.createContext("/boot-bootcamp");
@@ -33,7 +39,7 @@ public class SimpleServer {
         String response = "Number of visits: " + (VISITS_COUNTER++);
         exchange.sendResponseHeaders(STATUS_CODE_OKAY, response.getBytes().length); //response code and length
 
-        logger.info("date: " + new Date() +  ", message: " + response);
+        logger.info("Seed: " + seed +  ", message: " + response);
 
         OutputStream os = exchange.getResponseBody();
         os.write(response.getBytes());

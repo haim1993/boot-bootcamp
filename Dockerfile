@@ -9,6 +9,7 @@ WORKDIR /usr/app
 # Renaming the JAR file
 RUN mv bootcamp-1.0-SNAPSHOT-all.jar bootcamp.jar
 
+
 EXPOSE 8080
 
 CMD ["java", "-Dlog4j.configurationFile=log4j2.xml", "-jar", "bootcamp.jar"]
