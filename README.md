@@ -7,6 +7,11 @@ The project builds and runs an HAProxy container to load balance instances of a 
 You must have Docker installed on your system to build and run the containers.
 
 
+***!IMPORTANT***
+> To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file 
+> Configuration file path : src/main/resources/log4j2.xml
+
+
 ### Tasks
 **Part 1**
 - Create new repository “boot-bootcamp” in your personal GitHub account
@@ -36,6 +41,3 @@ docker-compose up --build
 
 The endpoint of the HAProxy,
 [localhost:8080/boot-bootcamp](http://localhost:8080/boot-bootcamp)
-
-***!IMPORTANT***
-> To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file (src/main/resources/log4j2.xml)
