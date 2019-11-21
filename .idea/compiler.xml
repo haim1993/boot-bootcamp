@@ -3,6 +3,8 @@
   <component name="CompilerConfiguration">
     <addNotNullAssertions enabled="false" />
     <bytecodeTargetLevel>
+      <module name="bootcamp.main" target="1.8" />
+      <module name="bootcamp.test" target="1.8" />
       <module name="untitled.main" target="11" />
       <module name="untitled.test" target="11" />
     </bytecodeTargetLevel>

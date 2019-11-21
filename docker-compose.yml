@@ -1,13 +1,11 @@
 version: '3'
 services:
     myserver1:
-        build:
-            context: .
-            dockerfile: Dockerfile
+        build: ./logs-shipper
+
     myserver2:
-        build:
-            context: .
-            dockerfile: Dockerfile
+        build: ./logs-shipper
+
     haproxy:
         build: ./haproxy
         ports:
@@ -15,4 +13,3 @@ services:
         depends_on:
             - myserver1
             - myserver2
-      

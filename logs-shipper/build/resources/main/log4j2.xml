@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <LogzioAppender name="Logzio">
+            <logzioToken>DJflusWyPBZIjjnqRIyryoxBpkypBANN</logzioToken>
+            <logzioType>myAwesomeType</logzioType>
+            <logzioUrl>https://listener.logz.io:8071</logzioUrl>
+        </LogzioAppender>
+
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Logzio"/>
+        </Root>
+    </Loggers>
+</Configuration>
