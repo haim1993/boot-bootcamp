@@ -25,6 +25,8 @@ You must have Docker installed on your system to build and run the containers.
 - Run boot-bootcamp as a Docker container 
 - Run 2 instances of boot-bootcamp behind a load-balancer. Use docker-compose
 
+**Part 3**
+- Integrate Jetty and JAX-RS (Jersey) as the REST API HTTP Server for your boot-bootcamp service
 
 ### How to build
 Building the JAR file:
@@ -33,11 +35,12 @@ Building the JAR file:
 ./gradlew shadowJar
 ```
 
-Running HAProxy container with 2 instances of the Logger Shipper:
+Running HAProxy container with 4 instances of the Logger Shipper:
 
 ```
-docker-compose up --build
+docker-compose --compatibility up --build
 ```
+The number of instances can be changed in the `.env` file : REPLICAS=<num-of-instances>
 
 The endpoint of the HAProxy,
 [localhost:8080/boot-bootcamp](http://localhost:8080/boot-bootcamp)
