@@ -40,7 +40,7 @@ Running HAProxy container with 4 instances of the Logger Shipper:
 ```
 docker-compose --compatibility up --build
 ```
-The number of instances can be changed in the `.env` file : REPLICAS=<num-of-instances>
+The number of instances can be changed in the `.env` file : REPLICAS=(num-of-instances)
 
 The endpoint of the HAProxy,
 [localhost:8080/boot-bootcamp](http://localhost:8080/boot-bootcamp)
