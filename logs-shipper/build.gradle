@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'SimpleServer'
+    mainClassName = 'com.SimpleServer'
 }
 
 version '1.0-SNAPSHOT'
@@ -21,6 +21,12 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
 
+    // Jetty
+    compile 'org.eclipse.jetty:jetty-server:9.2.3.v20140905'
+    compile 'org.eclipse.jetty:jetty-servlet:9.2.3.v20140905'
+    compile 'org.glassfish.jersey.core:jersey-server:2.7'
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.7'
+    compile 'org.glassfish.jersey.containers:jersey-container-jetty-http:2.7'
 }
 
 shadowJar {
