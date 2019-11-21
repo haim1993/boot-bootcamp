@@ -1,6 +1,6 @@
 version: '3'
 services:
-    myserver:
+    server:
         build: ./logs-shipper
         deploy:
             replicas: ${REPLICAS}
@@ -8,8 +8,9 @@ services:
     haproxy:
         build: ./haproxy
         ports:
-            - "8080:8080"
+            - "${PORT}:${PORT}"
         environment:
             - REPLICAS=${REPLICAS}
+            - PORT=${PORT}
         depends_on:
-            - myserver
+            - server
