@@ -28,6 +28,18 @@ You must have Docker installed on your system to build and run the containers.
 **Part 3**
 - Integrate Jetty and JAX-RS (Jersey) as the REST API HTTP Server for your boot-bootcamp service
 
+**Part 4**
+- Integrate Guice into your boot-bootcamp project
+  Create a class ServerModule that will bind the needed classes, and install the needed modules (Guice-Jersey https://github.com/logzio/guice-jersey)
+- Make the server configurable
+  Create a file server.config which will contain a json configuration file, as the following:
+  {
+      "port": 8080,
+      "logMessage": "boot boot"
+  }
+  Create a class ServerConfiguration  that will hold the configuration parameters as private members
+  Bind this class using guice, and use it in the appropriate places 
+
 ### How to build
 Building the JAR file:
 
