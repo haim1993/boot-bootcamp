@@ -1,18 +1,18 @@
-# Overview
+# Bootcamp Exercise
 
+## Introduction
 The project builds and runs an HAProxy container to load balance instances of a simple server application that ships dummy logs to the logz.io platform.
-
-
-### Dependencies
-You must have Docker installed on your system to build and run the containers.
-
 
 ***!IMPORTANT***
 > To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file 
 > Configuration file path : *logs-shipper/src/main/resources/log4j2.xml*
 
 
-### Tasks
+## Dependencies
+You must have Docker installed on your system to build and run the containers.
+
+
+## Tasks
 **Part 1**
 - Create new repository “boot-bootcamp” in your personal GitHub account
 - Create new JAVA project
@@ -42,7 +42,7 @@ You must have Docker installed on your system to build and run the containers.
   Create a class `ServerConfiguration`  that will hold the configuration parameters as private members
   Bind this class using guice, and use it in the appropriate places 
 
-### How to build
+## Installation
 Building the JAR file:
 
 ```
