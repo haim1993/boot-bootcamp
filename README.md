@@ -1,18 +1,18 @@
-# Overview
+# Bootcamp Exercise
 
+## Introduction
 The project builds and runs an HAProxy container to load balance instances of a simple server application that ships dummy logs to the logz.io platform.
-
-
-### Dependencies
-You must have Docker installed on your system to build and run the containers.
-
 
 ***!IMPORTANT***
 > To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file 
 > Configuration file path : *logs-shipper/src/main/resources/log4j2.xml*
 
 
-### Tasks
+## Dependencies
+You must have Docker installed on your system to build and run the containers.
+
+
+## Tasks
 **Part 1**
 - Create new repository “boot-bootcamp” in your personal GitHub account
 - Create new JAVA project
@@ -28,7 +28,21 @@ You must have Docker installed on your system to build and run the containers.
 **Part 3**
 - Integrate Jetty and JAX-RS (Jersey) as the REST API HTTP Server for your boot-bootcamp service
 
-### How to build
+**Part 4**
+- Integrate Guice into your boot-bootcamp project
+  Create a class `ServerModule` that will bind the needed classes, and install the needed modules (Guice-Jersey [https://github.com/logzio/guice-jersey](https://github.com/logzio/guice-jersey))
+- Make the server configurable
+  Create a file `server.config` which will contain a json configuration file, as the following:
+  ```
+  {
+      "port": 8080,
+      "logMessage": "boot boot"
+  }
+  ```
+  Create a class `ServerConfiguration`  that will hold the configuration parameters as private members
+  Bind this class using guice, and use it in the appropriate places 
+
+## Installation
 Building the JAR file:
 
 ```
