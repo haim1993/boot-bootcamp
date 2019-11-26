@@ -12,5 +12,3 @@ services:
         environment:
             - REPLICAS=${REPLICAS}
             - PORT=${PORT}
-        depends_on:
-            - server
