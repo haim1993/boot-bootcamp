@@ -73,5 +73,17 @@ docker-compose --compatibility up --build
 ```
 The number of instances can be changed in the `.env` file : REPLICAS=(num-of-instances)
 
-The endpoint of the HAProxy,
-[localhost:8080/boot-bootcamp](http://localhost:8080/boot-bootcamp)
+The endpoint of the HAProxy, to view logs
+[localhost:8080/api/logs](http://localhost:8080/api/logs)
+
+## Rest API
+
+To index a message into elastic search, use the curl command
+```
+curl -d '{"message": "boot camp first index"}' -H "Content-Type: application/json" -A "Mozilla/5.0 (Macintosh; Intel Mac OS X)" -X POST http://localhost:8080/api/index
+```
+
+To search for messages, use the curl command
+```
+curl -X GET 'http://localhost:8080/api/search?message=boot&header=Macintosh'
+```
