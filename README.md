@@ -80,7 +80,7 @@ The endpoint of the HAProxy, to view logs
 
 To index a message into elastic search, use the curl command
 ```
-curl -d '{"message": "boot camp first index"}' -H "Content-Type: application/json" -A "Mozilla/5.0 (Macintosh; Intel Mac OS X)" -X POST http://localhost:8080/api/index
+curl -X POST 'http://localhost:8080/api/index' -H "Content-Type: application/json" -A "Mozilla/5.0 (Macintosh; Intel Mac OS X)" -d '{"message": "boot camp first index"}'
 ```
 
 To search for messages, use the curl command
