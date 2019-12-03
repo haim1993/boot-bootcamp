@@ -6,6 +6,7 @@ import java.io.FileReader;
 
 public class Configuration {
 
+    // If running locally, add this to prefix file "logs-shipper/src/main/resources/"
     public static String SERVER_CONFIGURATION_FILE_PATH = "server.config";
     public static String LOGS_CONFIGURATION_FILE_PATH   = "logs.config";
 

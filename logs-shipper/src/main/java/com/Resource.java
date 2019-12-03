@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Singleton
-@Path("api")
+@Path("/")
 public class Resource {
 
     private LogsConfiguration logsConfiguration;
@@ -65,7 +65,7 @@ public class Resource {
     }
 
     @POST
-    @Path("index")
+    @Path("/api/index")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTrackInJSON(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
@@ -101,7 +101,7 @@ public class Resource {
     }
 
     @GET
-    @Path("search")
+    @Path("/api/search")
     @Produces(MediaType.TEXT_PLAIN)
     public String search(@QueryParam("message") String message, @QueryParam("header") String header) {
 

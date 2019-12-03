@@ -74,7 +74,7 @@ Running the project:
 The number of instances can be changed in the `.env` file : REPLICAS=(num-of-instances)
 
 The endpoint of the HAProxy, to view logs
-[localhost:8080/api/logs](http://localhost:8080/api/logs)
+[localhost:8080/logs](http://localhost:8080/logs)
 
 ## Rest API
 
