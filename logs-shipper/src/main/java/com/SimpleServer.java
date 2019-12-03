@@ -3,6 +3,9 @@ package com;
 import com.google.inject.Guice;
 import io.logz.guice.jersey.JerseyServer;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class SimpleServer {
     public static void main(String[] args) {
