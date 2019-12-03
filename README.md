@@ -1,7 +1,7 @@
 # Bootcamp Exercise
 
 ## Introduction
-The project builds and runs an HAProxy container to load balance instances of a simple server application that ships dummy logs to the logz.io platform.
+A continuous bootcamp project, that we're working on.
 
 ***!IMPORTANT***
 > To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file 
