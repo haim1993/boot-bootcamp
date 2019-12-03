@@ -66,7 +66,7 @@ Building the JAR file:
 ./gradlew shadowJar
 ```
 
-Running HAProxy container with 4 instances of the Logger Shipper:
+Running the project:
 
 ```
 ./gradlew start
