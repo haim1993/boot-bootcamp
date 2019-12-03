@@ -69,7 +69,7 @@ Building the JAR file:
 Running HAProxy container with 4 instances of the Logger Shipper:
 
 ```
-docker-compose --compatibility up --build
+./gradlew start
 ```
 The number of instances can be changed in the `.env` file : REPLICAS=(num-of-instances)
 
