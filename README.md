@@ -46,7 +46,16 @@ You must have Docker installed on your system to build and run the containers.
 - Add Elasticsearch Docker to your boot-bootcamp docker-compose
 - Add 2 new endpoints to your server:
 `POST /index --body '{"message": "boot camp first index"}'` which will index the received message to Elasticsearch, along with the `User-Agent` header value.  
-In Elasticsearch your doc will look something like: `{ "source": {"message": "boot camp first index", "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X)"} }`.  
+In Elasticsearch your doc will look something like:  
+```
+{
+    "source": {
+                  "message": "boot camp first index",
+                  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X)"
+              }
+}
+```
+
 `GET /search?message=camp&header=Macintosh` which will return a list of all the documents matching the search
 - Add an integration test
 
