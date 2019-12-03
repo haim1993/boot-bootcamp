@@ -20,6 +20,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,11 +68,17 @@ public class Resource {
     @Path("index")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createTrackInJSON(Map<String, String> jsonAsMap, @HeaderParam("user-agent") String userAgent) {
+    public Response createTrackInJSON(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
         IndexRequest request = new IndexRequest("posts", "_doc");
         request.id("" + ID++);
 
-        // Adding the user agent
+        String msg = requestIndexMessage.getMessage();
+        if (msg == null) {
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null").build();
+        }
+
+        Map<String, String> jsonAsMap = new HashMap<>();
+        jsonAsMap.put("message", msg);
         jsonAsMap.put("User-Agent", userAgent);
 
         request.source(jsonAsMap);
@@ -89,7 +97,7 @@ public class Resource {
         });
 
         String result = "Success";
-        return Response.status(201).entity(result).build();
+        return Response.status(HttpURLConnection.HTTP_OK).entity(result).build();
     }
 
     @GET
@@ -124,4 +132,13 @@ public class Resource {
         return null;
     }
 
+}
+
+/**
+ * Custom request index message
+ */
+class RequestIndexMessage {
+    private String message;
+    public String getMessage() { return this.message; }
+    public void setMessage(String message) { this.message = message; }
 }

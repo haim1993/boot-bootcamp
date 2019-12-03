@@ -3,13 +3,13 @@ package com;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.HttpURLConnection;
 
 public class ResourceTest {
 
@@ -21,22 +21,22 @@ public class ResourceTest {
 
     @Test
     public void testIndexRequest() {
-        String jsonObjectAsString = "{\"message\":\"maor\"}";
+        String jsonObjectAsString = "{\"message\":\"haim\"}";
         String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X)";
 
-        Response response = getWebTarget().path("index/")
+        Response response = getWebTarget().path("index")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.USER_AGENT, userAgent)
                 .post(Entity.json(jsonObjectAsString));
 
         assertNotNull(response);
-        assertTrue(response.getStatus() == 201);
+        assertTrue(response.getStatus() == HttpURLConnection.HTTP_OK);
     }
 
 
     @Test
     public void testSearchRequest() {
-        String message  = "maor";
+        String message  = "haim";
         String header   = "Macintosh";
 
         Response response = getWebTarget().path("search")
@@ -45,8 +45,8 @@ public class ResourceTest {
                 .request(MediaType.TEXT_PLAIN)
                 .get();
 
+        assertNotNull(response);
         System.out.print(response.readEntity(String.class));
-
-        assertTrue(response.getStatus() == 200);
+        assertTrue(response.getStatus() == HttpURLConnection.HTTP_OK);
     }
 }
