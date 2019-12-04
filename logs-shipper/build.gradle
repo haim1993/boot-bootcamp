@@ -53,15 +53,5 @@ shadowJar {
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
 }
 
-task start(type: Exec) {
-    executable "sh"
-    args "-c","cd .. &&  docker-compose --compatibility up --build"
-}
-
-task quit(type: Exec) {
-    executable "sh"
-    args "-c","cd .. &&  docker-compose stop"
-}
-
 
 

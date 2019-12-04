@@ -10,6 +10,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 public class ServerModule extends AbstractModule {
 
+    final ServerConfiguration serverConfiguration = Configuration.getServerConfiguration();
+
     @Override
     protected void configure() {
         install(new JerseyModule(createJerseyConfiguration()));
@@ -24,7 +26,7 @@ public class ServerModule extends AbstractModule {
     public RestHighLevelClient getRestHighLevelClient() {
         return new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("elasticsearch", 9200, "http")));
+                        new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getElasticPort(), "http")));
     }
 
     /**
@@ -35,7 +37,7 @@ public class ServerModule extends AbstractModule {
     private JerseyConfiguration createJerseyConfiguration() {
         return JerseyConfiguration.builder()
                 .addPackage("com")
-                .addPort(Configuration.getServerConfiguration().getPort())
+                .addPort(serverConfiguration.getPort())
                 .build();
     }
 }
