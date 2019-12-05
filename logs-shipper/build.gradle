@@ -14,6 +14,7 @@ repositories {
 }
 
 
+
 dependencies {
     compile group: 'io.logz.log4j2', name: 'logzio-log4j2-appender', version: '1.0.5'
 
@@ -21,18 +22,26 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
 
-    // Jetty & Jersey
-    compile 'org.eclipse.jetty:jetty-server:9.2.3.v20140905'
-    compile 'org.eclipse.jetty:jetty-servlet:9.2.3.v20140905'
-    compile 'org.glassfish.jersey.core:jersey-server:2.7'
-    compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.7'
-    compile 'org.glassfish.jersey.containers:jersey-container-jetty-http:2.7'
+    // Removes clashing with elasticsearch
+    compile 'org.apache.logging.log4j:log4j-core:2.9.0'
+
+    // https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson
+    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.17'
 
     // Logz.io Guice
     compile 'io.logz:guice-jersey:1.0.9'
 
     // Json Parser
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    // Elastic search
+    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.8.5'
+
+    // Need these dependencies for fucked up weird errors when running tests with Jersey
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+
+    testCompile 'junit:junit:4.12'
 }
 
 shadowJar {
@@ -43,5 +52,6 @@ shadowJar {
     // What the fuck is this?
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
 }
+
 
 

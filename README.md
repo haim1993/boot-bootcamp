@@ -1,7 +1,7 @@
 # Bootcamp Exercise
 
 ## Introduction
-The project builds and runs an HAProxy container to load balance instances of a simple server application that ships dummy logs to the logz.io platform.
+A continuous bootcamp project, that we're working on.
 
 ***!IMPORTANT***
 > To see the shipped logs in your logz.io account, you must change the TOKEN ID in the configuration file 
@@ -46,15 +46,17 @@ You must have Docker installed on your system to build and run the containers.
 - Add Elasticsearch Docker to your boot-bootcamp docker-compose
 - Add 2 new endpoints to your server:
 `POST /index --body '{"message": "boot camp first index"}'` which will index the received message to Elasticsearch, along with the `User-Agent` header value.  
-In Elasticsearch your doc will look something like: 
+
+In Elasticsearch your doc will look something like:  
 ```
-{ 
-  "source": {
-              "message": "boot camp first index",
-              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X)"
-            } 
+{
+    "source": {
+                  "message": "boot camp first index",
+                  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X)"
+              }
 }
 ```
+
 `GET /search?message=camp&header=Macintosh` which will return a list of all the documents matching the search
 - Add an integration test
 
@@ -65,12 +67,24 @@ Building the JAR file:
 ./gradlew shadowJar
 ```
 
-Running HAProxy container with 4 instances of the Logger Shipper:
+Running the project:
 
 ```
-docker-compose --compatibility up --build
+./gradlew start
 ```
 The number of instances can be changed in the `.env` file : REPLICAS=(num-of-instances)
 
-The endpoint of the HAProxy,
-[localhost:8080/boot-bootcamp](http://localhost:8080/boot-bootcamp)
+The endpoint of the HAProxy, to view logs
+[localhost:8080/logs](http://localhost:8080/logs)
+
+## Rest API
+
+To index a message into elastic search, use the curl command
+```
+curl -X POST 'http://localhost:8080/api/index' -H "Content-Type: application/json" -A "Mozilla/5.0 (Macintosh; Intel Mac OS X)" -d '{"message": "boot camp first index"}'
+```
+
+To search for messages, use the curl command
+```
+curl -X GET 'http://localhost:8080/api/search?message=boot&header=Macintosh'
+```

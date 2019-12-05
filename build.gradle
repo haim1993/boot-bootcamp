@@ -1,2 +1,11 @@
 project(':logs-shipper')
 
+task start(type: Exec) {
+    executable "sh"
+    args "-c","docker-compose --compatibility up --build"
+}
+
+task quit(type: Exec) {
+    executable "sh"
+    args "-c","docker-compose stop"
+}

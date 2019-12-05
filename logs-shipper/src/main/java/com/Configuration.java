@@ -6,6 +6,7 @@ import java.io.FileReader;
 
 public class Configuration {
 
+    // If running locally, add this to prefix file "logs-shipper/src/main/resources/"
     public static String SERVER_CONFIGURATION_FILE_PATH = "server.config";
     public static String LOGS_CONFIGURATION_FILE_PATH   = "logs.config";
 
@@ -18,7 +19,9 @@ public class Configuration {
     public static ServerConfiguration getServerConfiguration() {
         JSONObject obj = parseConfigurationFile(SERVER_CONFIGURATION_FILE_PATH);
         int port = Math.toIntExact((Long) obj.get("port"));
-        return new ServerConfiguration(port);
+        String elasticHost =  (String) obj.get("elasticHost");
+        int elasticPort = Math.toIntExact((Long) obj.get("elasticPort"));
+        return new ServerConfiguration(port, elasticHost, elasticPort);
     }
 
 
@@ -54,12 +57,18 @@ public class Configuration {
 
 class ServerConfiguration {
     private int port;
+    private int elasticPort;
+    private String elasticHost;
 
-    public ServerConfiguration(int port) {
+    public ServerConfiguration(int port, String elasticHost, int elasticPort) {
         this.port = port;
+        this.elasticHost = elasticHost;
+        this.elasticPort = elasticPort;
     }
 
     public int getPort() { return this.port; }
+    public String getElasticHost() { return this.elasticHost; }
+    public int getElasticPort() { return this.elasticPort; }
 }
 
 class LogsConfiguration {
