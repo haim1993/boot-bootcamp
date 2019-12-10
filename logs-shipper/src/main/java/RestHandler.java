@@ -1,5 +1,3 @@
-package com;
-
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -7,13 +5,13 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-public class RequestHandler {
+public class RestHandler {
 
     private static final String REST_API_URI = "http://localhost:8080/api/";
 
     private WebTarget webTarget;
 
-    public RequestHandler() {
+    public RestHandler() {
         this.webTarget = ClientBuilder.newClient().target(REST_API_URI);
     }
 

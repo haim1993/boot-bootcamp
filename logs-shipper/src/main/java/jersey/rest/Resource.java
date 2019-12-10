@@ -1,12 +1,16 @@
-package com;
+package jersey.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import config.LogsConfiguration;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.collect.Tuple;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -24,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Singleton
 @Path("/")
@@ -33,15 +38,19 @@ public class Resource {
     private static final String SEED = UUID.randomUUID().toString();
     private static final String INDEX = "posts";
     private static int VISITS_COUNTER = 1;
+    private static final String TOPIC = "sample";
 
-    private RestHighLevelClient elasticsearchClient;
     private LogsConfiguration logsConfiguration;
+    private final RestHighLevelClient elasticSearchClient;
+    private final KafkaProducer<Integer, String> producer;
+    private static int PRODUCER_MESSAGE_COUNT = 1;
 
 
     @Inject
-    public Resource(LogsConfiguration logsConfiguration, RestHighLevelClient elasticsearchClient) {
+    public Resource(LogsConfiguration logsConfiguration, RestHighLevelClient elasticSearchClient, KafkaProducer<Integer, String> producer) {
         this.logsConfiguration = logsConfiguration;
-        this.elasticsearchClient = elasticsearchClient;
+        this.elasticSearchClient = elasticSearchClient;
+        this.producer = producer;
     }
 
 
@@ -65,16 +74,24 @@ public class Resource {
     @Path("/api/index")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createTrackInJSON(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
+    public Response index(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
         Map<String, Object> docToIndex = buildDocToIndex(requestIndexMessage, userAgent);
         if (docToIndex == null) {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null\n").build();
         }
 
-        IndexRequest request = new IndexRequest(INDEX, "_doc");
-        request.source(docToIndex);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String msg = mapper.writeValueAsString(docToIndex);
 
-        return buildResponse(request);
+            producer.send(new ProducerRecord<>(TOPIC, PRODUCER_MESSAGE_COUNT++, msg)).get();
+            producer.flush();
+            System.out.println("Sent message: " + msg);
+            return Response.status(HttpURLConnection.HTTP_OK).entity("Success\n").build();
+        } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Producer failed to communicate with kafka\n").build();
+        }
     }
 
     @GET
@@ -87,7 +104,20 @@ public class Resource {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         searchRequest.source(getMatchQuerySourceBuilder(messagePair, agentPair));
 
-        return buildResponse(searchRequest);
+        try {
+            SearchResponse searchResponse = elasticSearchClient.search( searchRequest, RequestOptions.DEFAULT);
+            SearchHits hits = searchResponse.getHits();
+
+            StringBuilder builder = new StringBuilder();
+            for (SearchHit hit : hits) {
+                builder.append(hit.getSourceAsString() + "\n");
+            }
+            return Response.status(HttpURLConnection.HTTP_OK).entity(builder.toString()).build();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Failed\n").build();
     }
 
 
@@ -107,40 +137,6 @@ public class Resource {
         jsonAsMap.put("message", msg);
         jsonAsMap.put("User-Agent", userAgent);
         return jsonAsMap;
-    }
-
-    /**
-     * Given a Generic type E, we analyze its type using the 'instanceof' to build a corresponding response.
-     * Supported requests types are IndexRequest and SearchRequest.
-     *
-     * @param requestObject - the generic type
-     * @param <E>
-     * @return
-     */
-    public < E > Response buildResponse(E requestObject) {
-        try {
-            if (requestObject instanceof IndexRequest) {
-                IndexResponse indexResponse = elasticsearchClient.index((IndexRequest) requestObject, RequestOptions.DEFAULT);
-                return Response.status(HttpURLConnection.HTTP_OK).entity("Success\n").build();
-            }
-            else if (requestObject instanceof SearchRequest) {
-                SearchResponse searchResponse = elasticsearchClient.search((SearchRequest) requestObject, RequestOptions.DEFAULT);
-                SearchHits hits = searchResponse.getHits();
-
-                StringBuilder builder = new StringBuilder();
-                for (SearchHit hit : hits) {
-                    builder.append(hit.getSourceAsString() + "\n");
-                }
-                return Response.status(HttpURLConnection.HTTP_OK).entity(builder.toString()).build();
-            }
-            else {
-                return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Unrecognised object\n").build();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Failed\n").build();
     }
 
     /**

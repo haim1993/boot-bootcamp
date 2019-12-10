@@ -30,7 +30,7 @@ You must have Docker installed on your system to build and run the containers.
 
 **Part 4**
 - Integrate Guice into your boot-bootcamp project
-  Create a class `ServerModule` that will bind the needed classes, and install the needed modules (Guice-Jersey [https://github.com/logzio/guice-jersey](https://github.com/logzio/guice-jersey))
+  Create a class `juice.modules.ServerModule` that will bind the needed classes, and install the needed modules (Guice-Jersey [https://github.com/logzio/guice-jersey](https://github.com/logzio/guice-jersey))
 - Make the server configurable
   Create a file `server.config` which will contain a json configuration file, as the following:
   ```
@@ -59,6 +59,12 @@ In Elasticsearch your doc will look something like:
 
 `GET /search?message=camp&header=Macintosh` which will return a list of all the documents matching the search
 - Add an integration test
+
+**Part 6**
+- Add kafka Docker to your boot-bootcamp docker-compose
+- Change your /index endpoint behaviour: Instead of indexing the message directly to Elasticsearch, it will write the message to kafka
+- Create a new micro-service called indexer that consumes messages from kafka and index them to Elasticsearch
+- Ensure your existing integration test is GREEN without any changes in the test
 
 ## Installation
 Building the JAR file:

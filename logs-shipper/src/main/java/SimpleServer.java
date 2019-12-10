@@ -1,7 +1,6 @@
-package com;
-
 import com.google.inject.Guice;
 import io.logz.guice.jersey.JerseyServer;
+import juice.modules.ServerModule;
 
 public class SimpleServer {
     public static void main(String[] args) {

@@ -1,5 +1,3 @@
-package com;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -9,11 +7,11 @@ import java.net.HttpURLConnection;
 import java.util.Random;
 
 public class ResourceTest {
-    public static RequestHandler handler;
+    public static RestHandler handler;
 
     @BeforeClass
     public static void initializeGlobalParams() {
-        handler = new RequestHandler();
+        handler = new RestHandler();
     }
 
     public static final String SOURCES =
