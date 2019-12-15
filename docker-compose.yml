@@ -21,8 +21,8 @@ services:
         image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
         container_name: elasticsearch
         ports:
-            - "9200"   # for REST
-            - "9300"   # for node communication
+            - "9200:9200"   # for REST
+            - "9300"        # for node communication
         environment:
             ES_JAVA_OPTS: '-Xms256m -Xmx256m' # set heap size to 256mb
 

@@ -32,7 +32,7 @@ public class LogsShipperResource {
     @GET
     @Path("/logs")
     @Produces(MediaType.TEXT_PLAIN)
-    public String sendLog() {
+    public String logShipper() {
         String response =   "{ " +
                     "Seed: " + SEED + ", " +
                     "Visits: " + (VISITS_COUNTER++ + ", " +
