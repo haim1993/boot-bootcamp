@@ -7,9 +7,12 @@ import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 
 public class ServerJerseyModule extends AbstractModule {
-//    DEBUGGING ON LOCALHOST
-//    private static final String SERVER_CONFIGURATION_FILE_NAME = "./infrastructure/build/resources/main/server.config";
-    private static final String SERVER_CONFIGURATION_FILE_NAME = "server.config";
+
+    private final String fileUrl;
+
+    public ServerJerseyModule(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
     @Override
     protected void configure() {
@@ -23,9 +26,7 @@ public class ServerJerseyModule extends AbstractModule {
      */
     private JerseyConfiguration createJerseyConfiguration() {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ServerConfiguration serverConfig = configurationFactory.load(
-                SERVER_CONFIGURATION_FILE_NAME,
-                ServerConfiguration.class);
+        ServerConfiguration serverConfig = configurationFactory.load(fileUrl, ServerConfiguration.class);
 
         return JerseyConfiguration.builder()
                 .addPackage("jersey.rest")

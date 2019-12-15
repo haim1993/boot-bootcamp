@@ -1,4 +1,4 @@
-package jersey.rest;
+package consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -51,7 +51,6 @@ public class IndexConsumer implements Closeable {
         while (consumingState) {
             final ConsumerRecords<Integer, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
 
-            // TODO: use BulkRequest instead of single IndexRequest
             BulkRequest request = new BulkRequest();
             ObjectMapper mapper = new ObjectMapper();
             consumerRecords.forEach(record -> {

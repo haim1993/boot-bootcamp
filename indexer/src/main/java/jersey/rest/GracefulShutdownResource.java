@@ -1,5 +1,7 @@
 package jersey.rest;
 
+import consumer.IndexConsumer;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;

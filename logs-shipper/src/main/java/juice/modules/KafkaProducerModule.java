@@ -12,16 +12,17 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.Properties;
 
 public class KafkaProducerModule extends AbstractModule {
-//    DEBUGGING ON LOCALHOST
-//    private static final String PRODUCER_CONFIGURATION_FILE_NAME = "./logs-shipper/build/resources/main/producer.config";
-    private static final String PRODUCER_CONFIGURATION_FILE_NAME = "producer.config";
+
+    private final String fileUrl;
+
+    public KafkaProducerModule(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
     @Provides
     public KafkaProducer<Integer, String> getKafkaProducer() {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ProducerConfiguration kafkaConfig = configurationFactory.load(
-                PRODUCER_CONFIGURATION_FILE_NAME,
-                ProducerConfiguration.class);
+        ProducerConfiguration kafkaConfig = configurationFactory.load(fileUrl, ProducerConfiguration.class);
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getHost() + ":" + kafkaConfig.getPort());

@@ -13,16 +13,16 @@ import java.util.Properties;
 
 public class KafkaConsumerModule extends AbstractModule {
 
-//    DEBUGGING ON LOCALHOST
-//    private static final String CONSUMER_CONFIGURATION_FILE_NAME = "./indexer/build/resources/main/consumer.config";
-    private static final String CONSUMER_CONFIGURATION_FILE_NAME = "consumer.config";
+    private final String fileUrl;
+
+    public KafkaConsumerModule(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
     @Provides
     public KafkaConsumer<Integer, String> getKafkaConsumer() {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ConsumerConfiguration consumerConfig = configurationFactory.load(
-                CONSUMER_CONFIGURATION_FILE_NAME,
-                ConsumerConfiguration.class);
+        ConsumerConfiguration consumerConfig = configurationFactory.load(fileUrl, ConsumerConfiguration.class);
 
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerConfig.getHost() + ":" + consumerConfig.getPort());

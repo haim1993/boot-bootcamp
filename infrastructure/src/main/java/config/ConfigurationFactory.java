@@ -42,9 +42,5 @@ public class ConfigurationFactory {
                 new TypeReference<Map<String, Object>>() {});
     }
 
-
-    public static void main(String[] args) {
-
-    }
 }
 
