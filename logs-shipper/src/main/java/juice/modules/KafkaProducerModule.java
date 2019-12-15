@@ -12,7 +12,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.Properties;
 
 public class KafkaProducerModule extends AbstractModule {
-
+//    DEBUGGING ON LOCALHOST
+//    private static final String PRODUCER_CONFIGURATION_FILE_NAME = "./logs-shipper/build/resources/main/producer.config";
     private static final String PRODUCER_CONFIGURATION_FILE_NAME = "producer.config";
 
     @Provides

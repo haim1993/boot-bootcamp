@@ -7,7 +7,7 @@ import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 
 public class ServerJerseyModule extends AbstractModule {
-
+//    DEBUGGING ON LOCALHOST
 //    private static final String SERVER_CONFIGURATION_FILE_NAME = "./infrastructure/build/resources/main/server.config";
     private static final String SERVER_CONFIGURATION_FILE_NAME = "server.config";
 

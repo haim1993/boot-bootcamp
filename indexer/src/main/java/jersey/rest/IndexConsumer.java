@@ -6,7 +6,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -53,16 +52,12 @@ public class IndexConsumer implements Closeable {
             final ConsumerRecords<Integer, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
 
             // TODO: use BulkRequest instead of single IndexRequest
-//            BulkRequest request = new BulkRequest();
+            BulkRequest request = new BulkRequest();
             ObjectMapper mapper = new ObjectMapper();
             consumerRecords.forEach(record -> {
                 try {
                     Map<String, String> jsonMap = mapper.readValue(record.value(), Map.class);
-//                    request.add(new IndexRequest(INDEX).source(jsonMap));
-
-                    IndexRequest indexRequest = new IndexRequest(INDEX, "_doc");
-                    indexRequest.source(jsonMap);
-                    IndexResponse res =  elasticSearchClient.index(indexRequest, RequestOptions.DEFAULT);
+                    request.add(new IndexRequest(INDEX, "_doc").source(jsonMap));
 
                     System.out.printf("Consumer Record:(%d, %s, %d, %d)\n", record.key(), record.value(),
                             record.partition(), record.offset());
@@ -71,16 +66,16 @@ public class IndexConsumer implements Closeable {
                 }
             });
 
-//            if (request.numberOfActions() == 0) continue;
-//            try {
-//                BulkResponse bulkResponse = elasticSearchClient.bulk(request, RequestOptions.DEFAULT);
-//                if (bulkResponse.hasFailures()) {
-//                    System.out.println("Bulk: There's a problem master...");
-//                }
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            if (request.numberOfActions() == 0) continue;
+            try {
+                BulkResponse bulkResponse = elasticSearchClient.bulk(request, RequestOptions.DEFAULT);
+                if (bulkResponse.hasFailures()) {
+                    System.out.println("Bulk: There's a problem master...");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         consumer.close();
     }

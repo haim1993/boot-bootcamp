@@ -12,7 +12,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
 public class ElasticSearchModule extends AbstractModule {
-
+//    DEBUGGING ON LOCALHOST
 //    private static final String ES_CONFIGURATION_FILE_NAME = "./infrastructure/build/resources/main/elastic.config";
     private static final String ES_CONFIGURATION_FILE_NAME = "elastic.config";
     private static final String SCHEME_HTTP_CONFIG = "http";

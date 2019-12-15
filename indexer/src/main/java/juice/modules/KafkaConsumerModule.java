@@ -13,6 +13,8 @@ import java.util.Properties;
 
 public class KafkaConsumerModule extends AbstractModule {
 
+//    DEBUGGING ON LOCALHOST
+//    private static final String CONSUMER_CONFIGURATION_FILE_NAME = "./indexer/build/resources/main/consumer.config";
     private static final String CONSUMER_CONFIGURATION_FILE_NAME = "consumer.config";
 
     @Provides

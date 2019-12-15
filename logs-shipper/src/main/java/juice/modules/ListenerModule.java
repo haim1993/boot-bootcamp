@@ -7,6 +7,8 @@ import config.LogsConfiguration;
 
 public class ListenerModule extends AbstractModule {
 
+//    DEBUGGING ON LOCALHOST
+//    private static final String LOGS_CONFIGURATION_FILE_NAME = "./logs-shipper/build/resources/main/logs.config";
     private static final String LOGS_CONFIGURATION_FILE_NAME = "logs.config";
 
     @Override
