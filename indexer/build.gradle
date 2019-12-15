@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'IndexConsumer'
+    mainClassName = 'LogEngine'
 }
 
 version '1.0-SNAPSHOT'

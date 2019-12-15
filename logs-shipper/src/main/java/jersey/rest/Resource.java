@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 @Path("/")
 public class Resource {
@@ -48,14 +50,13 @@ public class Resource {
 
     @Inject
     public Resource(LogsConfiguration logsConfiguration, RestHighLevelClient elasticSearchClient, KafkaProducer<Integer, String> producer) {
-        this.logsConfiguration = logsConfiguration;
-        this.elasticSearchClient = elasticSearchClient;
-        this.producer = producer;
+        this.logsConfiguration = requireNonNull(logsConfiguration);
+        this.elasticSearchClient = requireNonNull(elasticSearchClient);
+        this.producer = requireNonNull(producer);
     }
 
-
     @GET
-    @Path("logs")
+    @Path("/logs")
     @Produces(MediaType.TEXT_PLAIN)
     public String sendLog() {
         String response =   "{ " +

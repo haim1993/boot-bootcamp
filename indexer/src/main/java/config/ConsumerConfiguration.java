@@ -2,19 +2,19 @@ package config;
 
 import java.util.Map;
 
-public class ProducerConfiguration {
+public class ConsumerConfiguration {
     private static final String HOST_CONFIG = "host";
     private static final String PORT_CONFIG = "port";
-    private static final String CLIENT_ID_CONFIG = "client.id";
+    private static final String GROUP_ID_CONFIG = "group.id";
 
     private String host;
     private int port;
     private String id;
 
-    public ProducerConfiguration(Map<String, Object> jsonMap) {
+    public ConsumerConfiguration(Map<String, Object> jsonMap) {
         this.host = (String) jsonMap.get(HOST_CONFIG);
         this.port = (Integer) jsonMap.get(PORT_CONFIG);
-        this.id = (String) jsonMap.get(CLIENT_ID_CONFIG);
+        this.id = (String) jsonMap.get(GROUP_ID_CONFIG);
     }
 
     public String getHost() { return this.host; }

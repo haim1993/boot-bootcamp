@@ -30,7 +30,7 @@ You must have Docker installed on your system to build and run the containers.
 
 **Part 4**
 - Integrate Guice into your boot-bootcamp project
-  Create a class `juice.modules.ServerModule` that will bind the needed classes, and install the needed modules (Guice-Jersey [https://github.com/logzio/guice-jersey](https://github.com/logzio/guice-jersey))
+  Create a class `juice.modules.ListenerModule` that will bind the needed classes, and install the needed modules (Guice-Jersey [https://github.com/logzio/guice-jersey](https://github.com/logzio/guice-jersey))
 - Make the server configurable
   Create a file `server.config` which will contain a json configuration file, as the following:
   ```

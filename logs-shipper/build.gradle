@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'SimpleServer'
+    mainClassName = 'Listener'
 }
 
 version '1.0-SNAPSHOT'
@@ -16,12 +16,11 @@ repositories {
 
 
 dependencies {
-    // https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson
+    /**
+     * This enables using custom types with jersey requests
+     * https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson
+     * */
     compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.17'
-
-    // Need these dependencies for fucked up weird errors when running tests with Jersey
-    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
-    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 
     // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
     compile 'org.apache.kafka:kafka-clients:2.3.1'

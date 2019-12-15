@@ -11,10 +11,12 @@ import java.util.Map;
 public class ConfigurationFactory {
 
     /**
+     * Method to load some configuration file URL, with a corresponding class to inject data into.
      *
-     * @param clazz
-     * @param <T>
-     * @return
+     * @param fileUrl - configuration file URL
+     * @param clazz - Object class
+     * @param <T> - generic class
+     * @return A loaded object with the configurations
      */
     public <T> T load(String fileUrl, Class<T> clazz) {
         try {
@@ -27,6 +29,7 @@ public class ConfigurationFactory {
     }
 
     /**
+     * Method to get Map object with configurations from given 'fileUrl' path.
      *
      * @return
      * @throws IOException

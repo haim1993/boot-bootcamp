@@ -36,7 +36,7 @@ public class ResourceTest {
 
     @Test
     public void testRandomGeneratedIndex() {
-        String randomString = generateString(new Random(), SOURCES, 1000);
+        String randomString = generateString(new Random(), SOURCES, 100);
 
         Response indexResponse = handler.indexRequestWithCustomMessage(randomString);
         assertNotNull(indexResponse);

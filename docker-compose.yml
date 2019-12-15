@@ -4,6 +4,7 @@ services:
         build: ./logs-shipper
         volumes:
             - ./infrastructure/src/main/resources/elastic.config:/usr/app/elastic.config
+            - ./infrastructure/src/main/resources/server.config:/usr/app/server.config
         deploy:
             replicas: ${REPLICAS}
 
@@ -20,13 +21,10 @@ services:
         image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
         container_name: elasticsearch
         ports:
-            - "9200:9200"   # for REST
-            - "9300"        # for node communication
+            - "9200"   # for REST
+            - "9300"   # for node communication
         environment:
             ES_JAVA_OPTS: '-Xms256m -Xmx256m' # set heap size to 256mb
-#            network.bind_host: 0.0.0.0
-#            network.host: 0.0.0.0
-#            discovery.type: single-node
 
     zookeeper:
         image: wurstmeister/zookeeper
@@ -46,5 +44,6 @@ services:
         build: ./indexer
         volumes:
             - ./infrastructure/src/main/resources/elastic.config:/usr/app/elastic.config
-        depends_on:
-            - kafka
+            - ./infrastructure/src/main/resources/server.config:/usr/app/server.config
+        ports:
+            - "9000:8080"
