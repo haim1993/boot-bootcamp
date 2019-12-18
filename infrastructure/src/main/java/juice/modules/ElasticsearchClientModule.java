@@ -19,8 +19,7 @@ public class ElasticsearchClientModule extends AbstractModule {
 
     @Provides
     public RestHighLevelClient getRestHighLevelClient() {
-        ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ElasticSearchConfiguration elastic = configurationFactory.load(
+        ElasticSearchConfiguration elastic = ConfigurationFactory.load(
                 ES_CONFIGURATION_FILE_NAME,
                 ElasticSearchConfiguration.class);
 

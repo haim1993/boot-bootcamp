@@ -21,8 +21,7 @@ public class KafkaProducerModule extends AbstractModule {
 
     @Provides
     public KafkaProducer<Integer, String> getKafkaProducer() {
-        ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ProducerConfiguration kafkaConfig = configurationFactory.load(kafkaProducerFilePath, ProducerConfiguration.class);
+        ProducerConfiguration kafkaConfig = ConfigurationFactory.load(kafkaProducerFilePath, ProducerConfiguration.class);
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getHost() + ":" + kafkaConfig.getPort());

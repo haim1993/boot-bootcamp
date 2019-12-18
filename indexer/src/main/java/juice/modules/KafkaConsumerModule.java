@@ -21,8 +21,7 @@ public class KafkaConsumerModule extends AbstractModule {
 
     @Provides
     public KafkaConsumer<Integer, String> getKafkaConsumer() {
-        ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ConsumerConfiguration consumerConfig = configurationFactory.load(kafkaConsumerFilePath, ConsumerConfiguration.class);
+        ConsumerConfiguration consumerConfig = ConfigurationFactory.load(kafkaConsumerFilePath, ConsumerConfiguration.class);
 
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerConfig.getHost() + ":" + consumerConfig.getPort());

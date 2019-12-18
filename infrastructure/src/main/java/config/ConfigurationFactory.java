@@ -18,7 +18,7 @@ public class ConfigurationFactory {
      * @param <T> - generic class
      * @return A loaded object with the configurations
      */
-    public <T> T load(String filePath, Class<T> clazz) {
+    public static <T> T load(String filePath, Class<T> clazz) {
         try {
             Map<String, Object> jsonMap = getJsonMap(filePath);
             Constructor<T> ctor = clazz.getConstructor(Map.class);
@@ -34,7 +34,7 @@ public class ConfigurationFactory {
      * @return
      * @throws IOException
      */
-    private Map<String, Object> getJsonMap(String filePath) throws IOException {
+    private static Map<String, Object> getJsonMap(String filePath) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         return mapper.readValue(

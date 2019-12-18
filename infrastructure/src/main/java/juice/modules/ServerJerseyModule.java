@@ -25,8 +25,7 @@ public class ServerJerseyModule extends AbstractModule {
      * @return
      */
     private JerseyConfiguration createJerseyConfiguration() {
-        ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ServerConfiguration serverConfig = configurationFactory.load(
+        ServerConfiguration serverConfig = ConfigurationFactory.load(
                 serverJerseyFilePath,
                 ServerConfiguration.class);
 
