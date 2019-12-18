@@ -11,7 +11,7 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
-public class ElasticSearchModule extends AbstractModule {
+public class ElasticsearchClientModule extends AbstractModule {
 //    DEBUGGING ON LOCALHOST
 //    private static final String ES_CONFIGURATION_FILE_NAME = "./infrastructure/build/resources/main/elastic.config";
     private static final String ES_CONFIGURATION_FILE_NAME = "elastic.config";

@@ -8,10 +8,10 @@ import io.logz.guice.jersey.configuration.JerseyConfiguration;
 
 public class ServerJerseyModule extends AbstractModule {
 
-    private final String fileUrl;
+    private final String serverJerseyFilePath;
 
-    public ServerJerseyModule(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public ServerJerseyModule(String serverJerseyFilePath) {
+        this.serverJerseyFilePath = serverJerseyFilePath;
     }
 
     @Override
@@ -26,7 +26,9 @@ public class ServerJerseyModule extends AbstractModule {
      */
     private JerseyConfiguration createJerseyConfiguration() {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ServerConfiguration serverConfig = configurationFactory.load(fileUrl, ServerConfiguration.class);
+        ServerConfiguration serverConfig = configurationFactory.load(
+                serverJerseyFilePath,
+                ServerConfiguration.class);
 
         return JerseyConfiguration.builder()
                 .addPackage("jersey.rest")

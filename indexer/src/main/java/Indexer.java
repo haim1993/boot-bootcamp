@@ -3,7 +3,7 @@ import io.logz.guice.jersey.JerseyServer;
 import juice.modules.IndexerModule;
 import juice.modules.RequireExplicitBindingsModule;
 
-public class LogEngine {
+public class Indexer {
 
     public static void main(String[] args) {
         try {

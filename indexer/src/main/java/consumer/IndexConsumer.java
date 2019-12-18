@@ -3,6 +3,8 @@ package consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -39,12 +41,14 @@ public class IndexConsumer implements Closeable {
         this.consumer = requireNonNull(consumer);
         this.consumingState = true;
 
-        // Run the run
+        // Run the consumer client
         this.executorService = Executors.newSingleThreadExecutor();
         this.executorService.submit(this::run);
     }
 
-    public void run() {
+    private void run() {
+        Logger logger = LogManager.getLogger(IndexConsumer.class);
+
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(TOPIC));
 
@@ -58,8 +62,9 @@ public class IndexConsumer implements Closeable {
                     Map<String, String> jsonMap = mapper.readValue(record.value(), Map.class);
                     request.add(new IndexRequest(INDEX, "_doc").source(jsonMap));
 
-                    System.out.printf("Consumer Record:(%d, %s, %d, %d)\n", record.key(), record.value(),
+                    logger.debug("Consumer Record:(%d, %s, %d, %d)\n", record.key(), record.value(),
                             record.partition(), record.offset());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -69,9 +74,9 @@ public class IndexConsumer implements Closeable {
             try {
                 BulkResponse bulkResponse = elasticSearchClient.bulk(request, RequestOptions.DEFAULT);
                 if (bulkResponse.hasFailures()) {
-                    System.out.println("Bulk: There's a problem master...");
+                    logger.error("Bulk: There's a problem master...");
                 }
-
+                consumer.commitSync();
             } catch (IOException e) {
                 e.printStackTrace();
             }

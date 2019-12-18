@@ -60,7 +60,7 @@ public class SearchResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Failed\n").build();
+        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Failed request\n").build();
     }
 
     /**
@@ -73,7 +73,7 @@ public class SearchResource {
      * @param args
      * @return
      */
-    public SearchSourceBuilder getMatchQuerySourceBuilder(Tuple<String,String>... args) {
+    private SearchSourceBuilder getMatchQuerySourceBuilder(Tuple<String,String>... args) {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();

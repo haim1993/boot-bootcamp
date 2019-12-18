@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'LogEngine'
+    mainClassName = 'Indexer'
 }
 
 version '1.0-SNAPSHOT'

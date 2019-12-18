@@ -13,20 +13,21 @@ import java.util.Properties;
 
 public class KafkaConsumerModule extends AbstractModule {
 
-    private final String fileUrl;
+    private final String kafkaConsumerFilePath;
 
-    public KafkaConsumerModule(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public KafkaConsumerModule(String kafkaConsumerFilePath) {
+        this.kafkaConsumerFilePath = kafkaConsumerFilePath;
     }
 
     @Provides
     public KafkaConsumer<Integer, String> getKafkaConsumer() {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ConsumerConfiguration consumerConfig = configurationFactory.load(fileUrl, ConsumerConfiguration.class);
+        ConsumerConfiguration consumerConfig = configurationFactory.load(kafkaConsumerFilePath, ConsumerConfiguration.class);
 
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerConfig.getHost() + ":" + consumerConfig.getPort());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerConfig.getId());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerConfig.getGroupId());
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         return new KafkaConsumer<>(props);

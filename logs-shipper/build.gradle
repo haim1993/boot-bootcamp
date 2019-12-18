@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'Listener'
+    mainClassName = 'LogsShipper'
 }
 
 version '1.0-SNAPSHOT'
@@ -28,6 +28,7 @@ dependencies {
     compile project(':infrastructure:')
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.awaitility:awaitility:4.0.1'
 }
 
 shadowJar {

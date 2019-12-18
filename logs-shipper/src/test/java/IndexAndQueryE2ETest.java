@@ -1,17 +1,21 @@
+import client.LogsShipperClient;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
 
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
+import java.time.Duration;
 import java.util.Random;
 
-public class ResourceTest {
-    public static RestHandler handler;
+public class IndexAndQueryE2ETest {
+    public static LogsShipperClient handler;
 
     @BeforeClass
     public static void initializeGlobalParams() {
-        handler = new RestHandler();
+        handler = new LogsShipperClient();
     }
 
     public static final String SOURCES =
@@ -26,7 +30,7 @@ public class ResourceTest {
      * @param length the length of the generated string.
      * @return
      */
-    public String generateString(Random random, String characters, int length) {
+    private String generateString(Random random, String characters, int length) {
         char[] text = new char[length];
         for (int i = 0; i < length; i++) {
             text[i] = characters.charAt(random.nextInt(characters.length()));
@@ -42,19 +46,14 @@ public class ResourceTest {
         assertNotNull(indexResponse);
         assertTrue(indexResponse.getStatus() == HttpURLConnection.HTTP_OK);
 
-        // Need to sleep a bit, in order to read the current indexed message
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        await().atMost(Duration.ofSeconds(3)).until(()->{
+            Response searchResponse = handler.searchRequestWithCustomMessage(randomString);
+            assertNotNull(searchResponse);
+            String entity = searchResponse.readEntity(String.class);
+            boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
+            boolean isMessageFound = entity.indexOf(randomString) > -1;
 
-        Response searchResponse = handler.searchRequestWithCustomMessage(randomString);
-        String entity = searchResponse.readEntity(String.class);
-        assertNotNull(searchResponse);
-        assertTrue(searchResponse.getStatus() == HttpURLConnection.HTTP_OK);
-
-        // Does this message exist?
-        assertTrue(entity.indexOf(randomString) > -1);
+            return isMessageIndexed && isMessageFound;
+        });
     }
 }

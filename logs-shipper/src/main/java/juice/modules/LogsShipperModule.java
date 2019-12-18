@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import config.ConfigurationFactory;
 import config.LogsConfiguration;
 
-public class ListenerModule extends AbstractModule {
+public class LogsShipperModule extends AbstractModule {
 
 //    DEBUGGING ON LOCALHOST
 //    private static final String LOGS_CONFIGURATION_FILE_NAME = "./logs-shipper/build/resources/main/logs.config";
@@ -19,7 +19,7 @@ public class ListenerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        install(new ElasticSearchModule());
+        install(new ElasticsearchClientModule());
         install(new ServerJerseyModule(SERVER_CONFIGURATION_FILE_NAME));
         install(new KafkaProducerModule(PRODUCER_CONFIGURATION_FILE_NAME));
     }

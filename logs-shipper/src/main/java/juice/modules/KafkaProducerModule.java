@@ -13,20 +13,20 @@ import java.util.Properties;
 
 public class KafkaProducerModule extends AbstractModule {
 
-    private final String fileUrl;
+    private final String kafkaProducerFilePath;
 
-    public KafkaProducerModule(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public KafkaProducerModule(String kafkaProducerFilePath) {
+        this.kafkaProducerFilePath = kafkaProducerFilePath;
     }
 
     @Provides
     public KafkaProducer<Integer, String> getKafkaProducer() {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        ProducerConfiguration kafkaConfig = configurationFactory.load(fileUrl, ProducerConfiguration.class);
+        ProducerConfiguration kafkaConfig = configurationFactory.load(kafkaProducerFilePath, ProducerConfiguration.class);
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getHost() + ":" + kafkaConfig.getPort());
-        properties.put(ProducerConfig.CLIENT_ID_CONFIG, kafkaConfig.getId());
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, kafkaConfig.getClientId());
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         return new KafkaProducer<>(properties);

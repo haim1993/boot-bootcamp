@@ -15,7 +15,7 @@ public class IndexerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        install(new ElasticSearchModule());
+        install(new ElasticsearchClientModule());
         install(new ServerJerseyModule(SERVER_CONFIGURATION_FILE_NAME));
         install(new KafkaConsumerModule(CONSUMER_CONFIGURATION_FILE_NAME));
 

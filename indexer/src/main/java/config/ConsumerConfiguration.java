@@ -9,15 +9,15 @@ public class ConsumerConfiguration {
 
     private String host;
     private int port;
-    private String id;
+    private String groupId;
 
     public ConsumerConfiguration(Map<String, Object> jsonMap) {
         this.host = (String) jsonMap.get(HOST_CONFIG);
         this.port = (Integer) jsonMap.get(PORT_CONFIG);
-        this.id = (String) jsonMap.get(GROUP_ID_CONFIG);
+        this.groupId = (String) jsonMap.get(GROUP_ID_CONFIG);
     }
 
     public String getHost() { return this.host; }
     public int getPort() { return this.port; }
-    public String getId() { return this.id; }
+    public String getGroupId() { return this.groupId; }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,7 +15,6 @@ import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,12 +25,12 @@ public class IndexResource {
     private static final String TOPIC = "sample";
 
     private final KafkaProducer<Integer, String> producer;
-    private static int PRODUCER_MESSAGE_COUNT = 1;
-
+    private final ObjectMapper mapper;
 
     @Inject
     public IndexResource(KafkaProducer<Integer, String> producer) {
         this.producer = requireNonNull(producer);
+        this.mapper = new ObjectMapper();
     }
 
     @POST
@@ -37,22 +38,23 @@ public class IndexResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response index(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
-        Map<String, Object> docToIndex = buildDocToIndex(requestIndexMessage, userAgent);
-        if (docToIndex == null) {
+        Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(requestIndexMessage, userAgent);
+        if (documentAsJsonMap == null) {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null\n").build();
         }
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            String msg = mapper.writeValueAsString(docToIndex);
+            String msg = mapper.writeValueAsString(documentAsJsonMap);
 
-            producer.send(new ProducerRecord<>(TOPIC, PRODUCER_MESSAGE_COUNT++, msg)).get();
-            producer.flush();
-            System.out.println("Sent message: " + msg);
-            return Response.status(HttpURLConnection.HTTP_OK).entity("Success\n").build();
-        } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
+            producer.send(new ProducerRecord<>(TOPIC, msg));
+
+            Logger logger = LogManager.getLogger(IndexResource.class);
+            logger.debug("Sent message: " + msg);
+
+            return Response.status(HttpURLConnection.HTTP_OK).entity("Your message has been sent successfully\n").build();
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Producer failed to communicate with kafka\n").build();
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Your message could not be delivered\n").build();
         }
     }
 
@@ -64,7 +66,7 @@ public class IndexResource {
      * @param userAgent
      * @return
      */
-    public Map<String, Object> buildDocToIndex(RequestIndexMessage requestIndexMessage, String userAgent) {
+    private Map<String, Object> buildDocumentAsJsonMap(RequestIndexMessage requestIndexMessage, String userAgent) {
         String msg = requestIndexMessage.getMessage();
         if (msg == null) return null;
 
@@ -74,13 +76,12 @@ public class IndexResource {
         return jsonAsMap;
     }
 
-}
-
-/**
- * Custom request index message
- */
-class RequestIndexMessage {
-    private String message;
-    public String getMessage() { return this.message; }
-    public void setMessage(String message) { this.message = message; }
+    /**
+     * Custom request index message
+     */
+    static class RequestIndexMessage {
+        private String message;
+        public String getMessage() { return this.message; }
+        public void setMessage(String message) { this.message = message; }
+    }
 }
