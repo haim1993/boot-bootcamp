@@ -9,9 +9,16 @@ import io.logz.guice.jersey.configuration.JerseyConfiguration;
 public class ServerJerseyModule extends AbstractModule {
 
     private final String serverJerseyFilePath;
+    private final String packageName;
 
     public ServerJerseyModule(String serverJerseyFilePath) {
         this.serverJerseyFilePath = serverJerseyFilePath;
+        this.packageName = "jersey.rest";
+    }
+
+    public ServerJerseyModule(String serverJerseyFilePath, String packageName) {
+        this.serverJerseyFilePath = serverJerseyFilePath;
+        this.packageName = packageName;
     }
 
     @Override
@@ -30,7 +37,7 @@ public class ServerJerseyModule extends AbstractModule {
                 ServerConfiguration.class);
 
         return JerseyConfiguration.builder()
-                .addPackage("jersey.rest")
+                .addPackage(packageName)
                 .addPort(serverConfig.getPort())
                 .build();
     }

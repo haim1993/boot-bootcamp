@@ -31,6 +31,4 @@ public class LogsShipperModule extends AbstractModule {
                 LogsConfiguration.class);
     }
 
-
-
 }
