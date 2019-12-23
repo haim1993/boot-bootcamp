@@ -6,4 +6,4 @@
 .gradle
 
 # Build files
-logs-shipper/build
+*/build

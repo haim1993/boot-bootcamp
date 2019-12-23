@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'javax:javaee-api:8.0'
+
+    // Logz.io Logger
+    compile group: 'io.logz.log4j2', name: 'logzio-log4j2-appender', version: '1.0.5'
+
+    // Removes generated errors :P
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'org.slf4j:slf4j-simple:1.6.4'
+
+    // Removes clashing with elasticsearch
+    compile 'org.apache.logging.log4j:log4j-core:2.9.0'
+
+    // Jackson - Json parser
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
+
+    // Elastic search
+    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.8.5'
+
+    // Logz.io Guice
+    compile 'io.logz:guice-jersey:1.0.9'
+
+    // Need these dependencies for fucked up weird errors when running tests with Jersey
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+
+    testCompile 'junit:junit:4.12'
+}
