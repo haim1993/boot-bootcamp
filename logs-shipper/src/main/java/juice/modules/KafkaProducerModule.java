@@ -20,13 +20,13 @@ public class KafkaProducerModule extends AbstractModule {
     }
 
     @Provides
-    public KafkaProducer<Integer, String> getKafkaProducer() {
+    public KafkaProducer<String, String> getKafkaProducer() {
         ProducerConfiguration kafkaConfig = ConfigurationFactory.load(kafkaProducerFilePath, ProducerConfiguration.class);
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getHost() + ":" + kafkaConfig.getPort());
         properties.put(ProducerConfig.CLIENT_ID_CONFIG, kafkaConfig.getClientId());
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         return new KafkaProducer<>(properties);
     }

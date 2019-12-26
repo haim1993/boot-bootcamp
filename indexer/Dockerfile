@@ -9,4 +9,4 @@ WORKDIR /usr/app
 # Renaming the JAR file
 RUN mv indexer-1.0-SNAPSHOT-all.jar indexer.jar
 
-CMD ["java", "-jar", "indexer.jar"]
+CMD ["java", "-Dlog4j.configurationFile=log4j2.xml", "-jar", "indexer.jar"]

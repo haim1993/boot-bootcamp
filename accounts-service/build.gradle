@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'Indexer'
+    mainClassName = 'AccountsService'
 }
 
 version '1.0-SNAPSHOT'
@@ -14,10 +14,16 @@ repositories {
 }
 
 dependencies {
-    compile project(':infrastructure:')
+    compile project(':infrastructure')
 
-    // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
-    compile 'org.apache.kafka:kafka-clients:2.3.1'
+    // MyBatis
+    compile 'org.mybatis:mybatis:3.5.3'
+
+    // MyBatis Guice
+    compile 'org.mybatis:mybatis-guice:3.10'
+
+    // JDBC Driver
+    compile 'mysql:mysql-connector-java:5.1.+'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

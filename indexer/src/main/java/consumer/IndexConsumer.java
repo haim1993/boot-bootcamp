@@ -1,5 +1,6 @@
 package consumer;
 
+import client.AccountsServiceApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -10,6 +11,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import pojo.Account;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,16 +29,15 @@ import static java.util.Objects.requireNonNull;
 public class IndexConsumer implements Closeable {
 
     private static final String TOPIC = "sample";
-    private static final String INDEX = "posts";
 
     private final RestHighLevelClient elasticSearchClient;
-    private final KafkaConsumer<Integer, String> consumer;
+    private final KafkaConsumer<String, String> consumer;
 
     private Boolean consumingState;
     private ExecutorService executorService;
 
     @Inject
-    public IndexConsumer(RestHighLevelClient elasticSearchClient, KafkaConsumer<Integer, String> consumer) {
+    public IndexConsumer(RestHighLevelClient elasticSearchClient, KafkaConsumer<String, String> consumer) {
         this.elasticSearchClient = requireNonNull(elasticSearchClient);
         this.consumer = requireNonNull(consumer);
         this.consumingState = true;
@@ -53,18 +54,22 @@ public class IndexConsumer implements Closeable {
         consumer.subscribe(Collections.singletonList(TOPIC));
 
         while (consumingState) {
-            final ConsumerRecords<Integer, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
+            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
 
             BulkRequest request = new BulkRequest();
             ObjectMapper mapper = new ObjectMapper();
             consumerRecords.forEach(record -> {
                 try {
                     Map<String, String> jsonMap = mapper.readValue(record.value(), Map.class);
-                    request.add(new IndexRequest(INDEX, "_doc").source(jsonMap));
 
-                    logger.debug("Consumer Record:(%d, %s, %d, %d)\n", record.key(), record.value(),
-                            record.partition(), record.offset());
+                    String token = record.key();
 
+                    // TODO : add AccountsServiceApi to Guice
+                    Account acc = new AccountsServiceApi().getAccountByToken(token);
+                    if (acc != null) {
+                        request.add(new IndexRequest(acc.getAccountEsIndexName(), "_doc").source(jsonMap));
+                        logger.debug("Consumer Record:("+record.key()+","+record.value()+","+record.partition()+","+record.offset()+")");
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

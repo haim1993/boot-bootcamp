@@ -1,5 +1,8 @@
 package jersey.rest;
 
+import client.AccountsServiceApi;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -10,13 +13,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import pojo.Account;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -28,8 +29,6 @@ import static java.util.Objects.requireNonNull;
 @Path("/")
 public class SearchResource {
 
-    private static final String INDEX = "posts";
-
     private final RestHighLevelClient elasticSearchClient;
 
     @Inject
@@ -40,11 +39,18 @@ public class SearchResource {
     @GET
     @Path("/api/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response search(@QueryParam("message") String message, @QueryParam("header") String header) {
+    public Response search(@HeaderParam ("X-ACCOUNT-TOKEN") String tokenHeader, @QueryParam("message") String message, @QueryParam("header") String header) {
         Tuple<String, String> messagePair    = new Tuple<>("message", message);
         Tuple<String, String> agentPair      = new Tuple<>("User-Agent", header);
 
-        SearchRequest searchRequest = new SearchRequest(INDEX);
+        // TODO: check token regex
+
+        Logger logger = LogManager.getLogger(SearchResource.class);
+        logger.debug("Token: " + tokenHeader);
+
+        Account acc = new AccountsServiceApi().getAccountByToken(tokenHeader);
+
+        SearchRequest searchRequest = new SearchRequest(acc.getAccountEsIndexName());
         searchRequest.source(getMatchQuerySourceBuilder(messagePair, agentPair));
 
         try {

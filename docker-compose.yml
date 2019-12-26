@@ -1,13 +1,13 @@
 version: '3'
 services:
-    server:
+    listener:
         build: ./logs-shipper
         volumes:
             - ./infrastructure/src/main/resources/elastic.config:/usr/app/elastic.config
             - ./infrastructure/src/main/resources/server.config:/usr/app/server.config
+            - ./infrastructure/src/main/resources/log4js.xml:/usr/app/log4js.xml
         deploy:
             replicas: ${REPLICAS}
-
 
     haproxy:
         build: ./haproxy
@@ -47,5 +47,28 @@ services:
         volumes:
             - ./infrastructure/src/main/resources/elastic.config:/usr/app/elastic.config
             - ./infrastructure/src/main/resources/server.config:/usr/app/server.config
+            - ./infrastructure/src/main/resources/log4js.xml:/usr/app/log4js.xml
         ports:
             - "9000:8080"
+
+    db:
+        image: mysql:5.6.34
+        restart: always
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: "bootcampdb"    # So you don't have to use root, but you can if you like
+            MYSQL_USER: "user"              # You can use whatever password you like
+            MYSQL_PASSWORD: "password"      # Password for root access
+            MYSQL_ROOT_PASSWORD: "password"
+        volumes:
+            - ./db/init.sql:/docker-entrypoint-initdb.d/dump.sql
+
+    accounts:
+        build: ./accounts-service
+        volumes:
+            - ./infrastructure/src/main/resources/server.config:/usr/app/server.config
+            - ./infrastructure/src/main/resources/log4js.xml:/usr/app/log4js.xml
+            - ./accounts-service/src/main/resources/mybatis/mybatis.config:/usr/app/mybatis.config
+        ports:
+            - "8888:8080"

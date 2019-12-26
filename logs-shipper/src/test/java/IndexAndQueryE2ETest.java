@@ -40,14 +40,18 @@ public class IndexAndQueryE2ETest {
 
     @Test
     public void testRandomGeneratedIndex() {
-        String randomString = generateString(new Random(), SOURCES, 100);
+        // TODO: First run, i get 504, second run works. Check this!!!!!
 
-        Response indexResponse = handler.indexRequestWithCustomMessage(randomString);
+        String randomString = generateString(new Random(), SOURCES, 100);
+        String token = "root";
+
+        Response indexResponse = handler.indexRequestWithCustomMessage(token, randomString);
         assertNotNull(indexResponse);
+        System.out.println(indexResponse.getStatus());
         assertTrue(indexResponse.getStatus() == HttpURLConnection.HTTP_OK);
 
         await().atMost(Duration.ofSeconds(3)).until(()->{
-            Response searchResponse = handler.searchRequestWithCustomMessage(randomString);
+            Response searchResponse = handler.searchRequestWithCustomMessage(token, randomString);
             assertNotNull(searchResponse);
             String entity = searchResponse.readEntity(String.class);
             boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;

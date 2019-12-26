@@ -66,6 +66,17 @@ In Elasticsearch your doc will look something like:
 - Create a new micro-service called indexer that consumes messages from kafka and index them to Elasticsearch
 - Ensure your existing integration test is GREEN without any changes in the test
 
+**Part 7**
+- Add mysql:5.6.34 to your docker-compose
+- Create a new endpoint `POST /create-account --body {"accountName": "Kivid"}` which will be responded with `{ "id": 1, "name": "Kivid", "token": "YZZXfOLKfTJEMGgKknWaKOpURnvALnRi", "esIndexName": "logz-jopnbwmknooanqwzxgpybunufztysazs" }`
+- Change your `POST /index` endpoint to accept a token, as `POST /index/YZZXfOLKfTJEMGgKknWaKOpURnvALnRi` . If a wrong token will be given, response will be 401 Unauthorized. The log will be stored in the account’s index, which will be the value of esIndexName
+- Change your `GET /search` endpoint to accept a token, as `GET /search --header "X-ACCOUNT-TOKEN: YZZXfOLKfTJEMGgKknWaKOpURnvALnRi"` 
+- Add test(s) to verify each account can index and query his own logs only.
+- Add a new service called “accounts-service”
+- The new service will be the one receiving the `POST /create-account` request 
+- It will be the only service which has access to the MySQL database
+- Everyone else (listener, indexer etc.) who wants to get an account details, will request it from accounts-service. For this, you will need accounts-service to expose some other endpoints (i.e `GET /account/token/YZZXfOLKfTJEMGgKknWaKOpURnvALnRi` responds with `{ "id": 1, "name": "Kivid", "token": "YZZXfOLKfTJEMGgKknWaKOpURnvALnRi", "esIndexName": "logz-jopnbwmknooanqwzxgpybunufztysazs" }` )
+
 ## Installation
 Building the JAR file:
 

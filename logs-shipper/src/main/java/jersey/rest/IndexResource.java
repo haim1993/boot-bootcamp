@@ -1,11 +1,13 @@
 package jersey.rest;
 
+import client.AccountsServiceApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojo.Account;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,20 +26,33 @@ public class IndexResource {
 
     private static final String TOPIC = "sample";
 
-    private final KafkaProducer<Integer, String> producer;
+    private final KafkaProducer<String, String> producer;
     private final ObjectMapper mapper;
 
     @Inject
-    public IndexResource(KafkaProducer<Integer, String> producer) {
+    public IndexResource(KafkaProducer<String, String> producer) {
         this.producer = requireNonNull(producer);
         this.mapper = new ObjectMapper();
     }
 
     @POST
-    @Path("/api/index")
+    @Path("/api/index/{accountToken}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response index(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
+    public Response index(RequestIndexMessage requestIndexMessage,
+                          @HeaderParam("user-agent") String userAgent,
+                          @PathParam("accountToken") String accountToken) {
+
+        Account acc = new AccountsServiceApi().getAccountByToken(accountToken);
+        // TODO: check token regex
+        // TODO: check for optional
+
+
+        if (acc == null) {
+            return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
+                    .entity("The account token is not authorized.").build();
+        }
+
         Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(requestIndexMessage, userAgent);
         if (documentAsJsonMap == null) {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null\n").build();
@@ -46,7 +61,7 @@ public class IndexResource {
         try {
             String msg = mapper.writeValueAsString(documentAsJsonMap);
 
-            producer.send(new ProducerRecord<>(TOPIC, msg));
+            producer.send(new ProducerRecord<>(TOPIC, accountToken, msg));
 
             Logger logger = LogManager.getLogger(IndexResource.class);
             logger.debug("Sent message: " + msg);

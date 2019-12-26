@@ -2,4 +2,5 @@ rootProject.name = 'bootcamp'
 include 'logs-shipper'
 include 'indexer'
 include 'infrastructure'
+include 'accounts-service'
 
