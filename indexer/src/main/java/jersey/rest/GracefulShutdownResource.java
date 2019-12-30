@@ -31,7 +31,7 @@ public class GracefulShutdownResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response close() {
         consumer.close();
-        return Response.status(HttpURLConnection.HTTP_OK).entity("Consumer is being closed gracefully :)\n").build();
+        return Response.status(HttpURLConnection.HTTP_OK).entity("Consumer is being closed gracefully").build();
     }
 
 }

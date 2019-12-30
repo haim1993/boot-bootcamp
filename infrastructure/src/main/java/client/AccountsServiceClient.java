@@ -65,10 +65,10 @@ public class AccountsServiceClient {
      * HttpURLConnection.HTTP_CONFLICT ( 409 ) - Account name already exists.
      */
     public Response createAccount(String accountName) {
+        String jsonObjectAsString = "{\"accountName\":\""+accountName+"\"}";
         return webTarget.path("create-account")
-                .queryParam("accountName", accountName)
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(""));
+                .post(Entity.json(jsonObjectAsString));
     }
 
 }

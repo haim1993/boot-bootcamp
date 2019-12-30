@@ -1,13 +1,12 @@
 package client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import config.ConfigurationFactory;
 import pojo.Account;
-import pojo.AccountConfigurations;
+import regex.RegexValidator;
 
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.Map;
+import java.util.Optional;
 
 public class AccountsServiceApi {
 
@@ -23,40 +22,32 @@ public class AccountsServiceApi {
 
 
     /**
+     * Given an account token, we get the corresponding account by
+     * calling the 'accounts-service' micro service.
      *
-     * @param accountToken
+     * @param accountToken - token of account
      * @return
      */
-    public Account getAccountByToken(String accountToken) {
-        Response res = accountsServiceClient.getAccountByToken(accountToken);
-        switch(res.getStatus()) {
-            case HttpURLConnection.HTTP_OK:
-                return parseFromJsonToAccount(res.readEntity(String.class));
+    public Optional<Account> getAccountByToken(String accountToken) {
+        if (RegexValidator.isTokenValid(accountToken)) {
+            Response res = accountsServiceClient.getAccountByToken(accountToken);
+            switch(res.getStatus()) {
+                case HttpURLConnection.HTTP_OK:
+                    return Optional.ofNullable(ConfigurationFactory.read(res.readEntity(String.class), Account.class));
+            }
         }
-        return null;
+        return Optional.empty();
     }
 
-    /**
-     *
-     * @param json
-     * @return
-     */
-    private Account parseFromJsonToAccount(String json) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // convert JSON string to Map
-            Map<String, Object> map = mapper.readValue(json, Map.class);
-            Account acc = new Account();
-            acc.setAccountNo((int) map.get(AccountConfigurations.ID));
-            acc.setAccountName((String) map.get(AccountConfigurations.NAME));
-            acc.setAccountToken((String) map.get(AccountConfigurations.TOKEN));
-            acc.setAccountEsIndexName((String) map.get(AccountConfigurations.ES_INDEX_NAME));
-            return acc;
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    public Optional<Account> createAccount(String accountName) {
+        if (RegexValidator.isNameValid(accountName)) {
+            Response res = accountsServiceClient.createAccount(accountName);
+            switch(res.getStatus()) {
+                case HttpURLConnection.HTTP_OK:
+                    return Optional.ofNullable(ConfigurationFactory.read(res.readEntity(String.class), Account.class));
+            }
         }
-        return null;
+        return Optional.empty();
     }
 
 }

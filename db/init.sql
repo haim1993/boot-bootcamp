@@ -10,7 +10,4 @@ CREATE TABLE Account (
 );
 
 INSERT INTO Account (accountName, accountToken, accountEsIndexName)
-VALUES ("root", "root", "root");
-
-INSERT INTO Account (accountName, accountToken, accountEsIndexName)
-VALUES ("admin", "admin", "admin");
+VALUES ("root", "YZZXfOLKfTJEMGgKknWaKOpURnvALnRi", "logz-jopnbwmknooanqwzxgpybunufztysazs");

@@ -1,6 +1,9 @@
+import client.AccountsServiceApi;
 import client.LogsShipperClient;
+import generator.Generator;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import pojo.Account;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
@@ -8,7 +11,9 @@ import static org.junit.Assert.*;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.time.Duration;
-import java.util.Random;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IndexAndQueryE2ETest {
     public static LogsShipperClient handler;
@@ -18,46 +23,65 @@ public class IndexAndQueryE2ETest {
         handler = new LogsShipperClient();
     }
 
-    public static final String SOURCES =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+    @Test
+    public void indexAndSearchForMessageWithTokenTest() {
+        String token = createNewAccountAndGetToken();
+        String randomMessage = Generator.generateMessage(100);
+        indexCustomMessageWithToken(token, randomMessage);
 
-
-    /**
-     * Generate a random string.
-     *
-     * @param random the random number generator.
-     * @param characters the characters for generating string.
-     * @param length the length of the generated string.
-     * @return
-     */
-    private String generateString(Random random, String characters, int length) {
-        char[] text = new char[length];
-        for (int i = 0; i < length; i++) {
-            text[i] = characters.charAt(random.nextInt(characters.length()));
-        }
-        return new String(text);
+        await().atMost(Duration.ofSeconds(3)).until(()->{
+            String res = searchAndVerifyCustomMessageWithToken(token, randomMessage);
+            return containsOnce(res, randomMessage);
+        });
     }
 
     @Test
-    public void testRandomGeneratedIndex() {
-        // TODO: First run, i get 504, second run works. Check this!!!!!
+    public void indexAndSearchForMessageWithTwoTokensWithoutConflictTest() {
+        String token1 = createNewAccountAndGetToken();
+        String token2 = createNewAccountAndGetToken();
 
-        String randomString = generateString(new Random(), SOURCES, 100);
-        String token = "root";
+        String randomMessage1 = Generator.generateMessage(100);
+        String randomMessage2 = Generator.generateMessage(100);
 
-        Response indexResponse = handler.indexRequestWithCustomMessage(token, randomString);
-        assertNotNull(indexResponse);
-        System.out.println(indexResponse.getStatus());
-        assertTrue(indexResponse.getStatus() == HttpURLConnection.HTTP_OK);
+        indexCustomMessageWithToken(token1, randomMessage1);
+        indexCustomMessageWithToken(token2, randomMessage2);
 
-        await().atMost(Duration.ofSeconds(3)).until(()->{
-            Response searchResponse = handler.searchRequestWithCustomMessage(token, randomString);
-            assertNotNull(searchResponse);
-            String entity = searchResponse.readEntity(String.class);
-            boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
-            boolean isMessageFound = entity.indexOf(randomString) > -1;
+        await().atMost(Duration.ofSeconds(3)).until(()->
+                containsOnce(searchAndVerifyCustomMessageWithToken(token1, randomMessage1), randomMessage1) &&
+                !searchAndVerifyCustomMessageWithToken(token1, randomMessage2).contains(randomMessage2));
 
-            return isMessageIndexed && isMessageFound;
-        });
+        await().atMost(Duration.ofSeconds(3)).until(()->
+                containsOnce(searchAndVerifyCustomMessageWithToken(token2, randomMessage2), randomMessage2) &&
+                !searchAndVerifyCustomMessageWithToken(token2, randomMessage1).contains(randomMessage1));
+    }
+
+
+    private String createNewAccountAndGetToken() {
+        Optional<Account> optionalAccount = new AccountsServiceApi("localhost", 8888).createAccount(Generator.generateName());
+        assertTrue(optionalAccount.isPresent());
+        return optionalAccount.get().getAccountToken();
+    }
+
+    private void indexCustomMessageWithToken(String token, String customMessage) {
+        Response indexResponse1 = handler.indexRequestWithCustomMessage(token, customMessage);
+        assertNotNull(indexResponse1);
+        assertTrue(indexResponse1.getStatus() == HttpURLConnection.HTTP_OK);
+    }
+
+    private String searchAndVerifyCustomMessageWithToken(String token, String customMessage) {
+        Response searchResponse = handler.searchRequestWithCustomMessage(token, customMessage);
+        assertNotNull(searchResponse);
+        assertTrue(searchResponse.getStatus() == HttpURLConnection.HTTP_OK);
+        return searchResponse.readEntity(String.class);
+    }
+
+    // Returns true if string 'substring' is in string 's' only once. Otherwise returns false
+    private boolean containsOnce(final String s, final String substring) {
+        Pattern pattern = Pattern.compile(substring);
+        Matcher matcher = pattern.matcher(s);
+        if(matcher.find()){
+            return !matcher.find();
+        }
+        return false;
     }
 }

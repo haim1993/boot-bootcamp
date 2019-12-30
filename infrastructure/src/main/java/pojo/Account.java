@@ -1,5 +1,8 @@
 package pojo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Account {
 
     private int accountNo;
@@ -19,36 +22,24 @@ public class Account {
         return accountNo;
     }
 
-    public void setAccountNo(int accountNo) {
-        this.accountNo = accountNo;
-    }
-
     public String getAccountName() {
         return accountName;
-    }
-
-    public void setAccountName(String accountName) {
-        this.accountName = accountName;
     }
 
     public String getAccountToken() {
         return accountToken;
     }
 
-    public void setAccountToken(String accountToken) {
-        this.accountToken = accountToken;
-    }
-
     public String getAccountEsIndexName() {
         return accountEsIndexName;
     }
 
-    public void setAccountEsIndexName(String accountEsIndexName) {
-        this.accountEsIndexName = accountEsIndexName;
-    }
-
     public String toString() {
         return getAccountNo() + ", " + getAccountName() + ", " + getAccountToken() + ", " + getAccountEsIndexName();
+    }
+
+    public String toJsonString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 
 }

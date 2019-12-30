@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,6 +50,7 @@ public class IndexConsumer implements Closeable {
 
     private void run() {
         Logger logger = LogManager.getLogger(IndexConsumer.class);
+        AccountsServiceApi accountsServiceApi = new AccountsServiceApi();
 
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(TOPIC));
@@ -64,11 +66,10 @@ public class IndexConsumer implements Closeable {
 
                     String token = record.key();
 
-                    // TODO : add AccountsServiceApi to Guice
-                    Account acc = new AccountsServiceApi().getAccountByToken(token);
-                    if (acc != null) {
-                        request.add(new IndexRequest(acc.getAccountEsIndexName(), "_doc").source(jsonMap));
-                        logger.debug("Consumer Record:("+record.key()+","+record.value()+","+record.partition()+","+record.offset()+")");
+                    Optional<Account> optionalAccount = accountsServiceApi.getAccountByToken(token);
+                    if (optionalAccount.isPresent()) {
+                        request.add(new IndexRequest(optionalAccount.get().getAccountEsIndexName(), "_doc").source(jsonMap));
+                        logger.debug("Consumer Record:("+token+","+record.value()+","+record.partition()+","+record.offset()+")");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

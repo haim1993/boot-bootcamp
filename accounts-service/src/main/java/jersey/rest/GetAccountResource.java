@@ -1,10 +1,9 @@
 package jersey.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import mybatis.account.AccountMapper;
 import pojo.Account;
-import pojo.AccountConfigurations;
+import regex.RegexValidator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,8 +11,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Singleton
 @Path("/account")
@@ -31,27 +28,23 @@ public class GetAccountResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAccountByToken(@PathParam("accountToken") String accountToken) {
-
-        // TODO: check regex token
-        Account a = (Account) accountMapper.getAccountByToken(accountToken);
-        if (a == null) {
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The token does not exist.").build();
+        if (!RegexValidator.isTokenValid(accountToken)) {
+            Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                    .entity("The account token contains unsupported characters").build();
         }
 
-        Map<String, Object> jsonMap = new HashMap<>();
-        jsonMap.put(AccountConfigurations.ID, a.getAccountNo());
-        jsonMap.put(AccountConfigurations.NAME, a.getAccountName());
-        jsonMap.put(AccountConfigurations.TOKEN, a.getAccountToken());
-        jsonMap.put(AccountConfigurations.ES_INDEX_NAME, a.getAccountEsIndexName());
-
-        final ObjectMapper mapper = new ObjectMapper();
+        Account account = accountMapper.getAccountByToken(accountToken);
+        if (account == null) {
+            return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
+                    .entity("The account token is not authorized").build();
+        }
 
         try {
-            return Response.status(HttpURLConnection.HTTP_OK).entity(mapper.writeValueAsString(jsonMap)).build();
+            return Response.status(HttpURLConnection.HTTP_OK).entity(account.toJsonString()).build();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity("Task Failed.").build();
+        return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity("Task Failed").build();
     }
 
 }

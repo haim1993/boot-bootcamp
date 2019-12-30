@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,31 +31,37 @@ import static java.util.Objects.requireNonNull;
 public class SearchResource {
 
     private final RestHighLevelClient elasticSearchClient;
+    private final AccountsServiceApi accountsServiceApi;
 
     @Inject
     public SearchResource(RestHighLevelClient elasticSearchClient) {
         this.elasticSearchClient = requireNonNull(elasticSearchClient);
+        this.accountsServiceApi = new AccountsServiceApi();
     }
 
     @GET
     @Path("/api/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response search(@HeaderParam ("X-ACCOUNT-TOKEN") String tokenHeader, @QueryParam("message") String message, @QueryParam("header") String header) {
+    public Response search(@HeaderParam ("X-ACCOUNT-TOKEN") String tokenHeader,
+                           @QueryParam("message") String message,
+                           @QueryParam("header") String header) {
         Tuple<String, String> messagePair    = new Tuple<>("message", message);
         Tuple<String, String> agentPair      = new Tuple<>("User-Agent", header);
 
-        // TODO: check token regex
+        Optional<Account> optionalAccount = accountsServiceApi.getAccountByToken(tokenHeader);
+        if (!optionalAccount.isPresent()) {
+            return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
+                    .entity("The account token is not authorized").build();
+        }
 
         Logger logger = LogManager.getLogger(SearchResource.class);
         logger.debug("Token: " + tokenHeader);
 
-        Account acc = new AccountsServiceApi().getAccountByToken(tokenHeader);
-
-        SearchRequest searchRequest = new SearchRequest(acc.getAccountEsIndexName());
+        SearchRequest searchRequest = new SearchRequest(optionalAccount.get().getAccountEsIndexName());
         searchRequest.source(getMatchQuerySourceBuilder(messagePair, agentPair));
 
         try {
-            SearchResponse searchResponse = elasticSearchClient.search( searchRequest, RequestOptions.DEFAULT);
+            SearchResponse searchResponse = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits hits = searchResponse.getHits();
 
             StringBuilder builder = new StringBuilder();
@@ -66,7 +73,7 @@ public class SearchResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Failed request\n").build();
+        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Bad request").build();
     }
 
     /**

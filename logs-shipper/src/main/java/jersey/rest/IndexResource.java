@@ -7,7 +7,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojo.Account;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,11 +26,14 @@ public class IndexResource {
     private static final String TOPIC = "sample";
 
     private final KafkaProducer<String, String> producer;
+    private final AccountsServiceApi accountsServiceApi;
     private final ObjectMapper mapper;
+
 
     @Inject
     public IndexResource(KafkaProducer<String, String> producer) {
         this.producer = requireNonNull(producer);
+        this.accountsServiceApi = new AccountsServiceApi();
         this.mapper = new ObjectMapper();
     }
 
@@ -43,19 +45,14 @@ public class IndexResource {
                           @HeaderParam("user-agent") String userAgent,
                           @PathParam("accountToken") String accountToken) {
 
-        Account acc = new AccountsServiceApi().getAccountByToken(accountToken);
-        // TODO: check token regex
-        // TODO: check for optional
-
-
-        if (acc == null) {
-            return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
-                    .entity("The account token is not authorized.").build();
+        if (!accountsServiceApi.getAccountByToken(accountToken).isPresent()) {
+            Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
+                    .entity("The account token is not authorized").build();
         }
 
         Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(requestIndexMessage, userAgent);
         if (documentAsJsonMap == null) {
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null\n").build();
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null").build();
         }
 
         try {
@@ -66,10 +63,10 @@ public class IndexResource {
             Logger logger = LogManager.getLogger(IndexResource.class);
             logger.debug("Sent message: " + msg);
 
-            return Response.status(HttpURLConnection.HTTP_OK).entity("Your message has been sent successfully\n").build();
+            return Response.status(HttpURLConnection.HTTP_OK).entity("Your message has been sent successfully").build();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Your message could not be delivered\n").build();
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Your message could not be delivered").build();
         }
     }
 

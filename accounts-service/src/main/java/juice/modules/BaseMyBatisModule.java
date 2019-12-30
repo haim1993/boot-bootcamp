@@ -2,7 +2,6 @@ package juice.modules;
 
 import com.google.inject.name.Names;
 import config.ConfigurationFactory;
-import config.MyBatisConfiguration;
 import mybatis.account.AccountMapper;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
@@ -32,23 +31,9 @@ public class BaseMyBatisModule extends MyBatisModule {
         // This is for the mapper
         bind(DefaultObjectWrapperFactory.class);
         bind(DefaultObjectFactory.class);
-
-        // For using Properties directly without class configuration handler
-//        bind(ClassLoader.class);
-//        bind(SqlSessionFactory.class);
     }
 
     private Properties getMyBatisProperties() {
-        Properties myBatisProperties = new Properties();
-
-        MyBatisConfiguration myBatisConfiguration = ConfigurationFactory.load(MYBATIS_CONFIGURATION_FILE_NAME, MyBatisConfiguration.class);
-        myBatisProperties.setProperty(MyBatisConfiguration.MYBATIS_ENVIRONMENT_ID, myBatisConfiguration.getEnvironmentId());
-        myBatisProperties.setProperty(MyBatisConfiguration.JDBC_HOST, myBatisConfiguration.getHost());
-        myBatisProperties.setProperty(MyBatisConfiguration.JDBC_PORT, myBatisConfiguration.getPort());
-        myBatisProperties.setProperty(MyBatisConfiguration.JDBC_SCHEMA, myBatisConfiguration.getSchema());
-        myBatisProperties.setProperty(MyBatisConfiguration.JDBC_USERNAME, myBatisConfiguration.getUsername());
-        myBatisProperties.setProperty(MyBatisConfiguration.JDBC_PASSWORD, myBatisConfiguration.getPassword());
-        myBatisProperties.setProperty(MyBatisConfiguration.JDBC_AUTO_COMMIT, myBatisConfiguration.isAutoCommit());
-        return  myBatisProperties;
+        return ConfigurationFactory.load(MYBATIS_CONFIGURATION_FILE_NAME, Properties.class);
     }
 }
