@@ -7,11 +7,8 @@ import org.junit.Test;
 import pojo.Account;
 
 import javax.ws.rs.core.Response;
-
 import java.net.HttpURLConnection;
-import java.util.Optional;
 
-import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
 public class AccountsServiceClientTest {

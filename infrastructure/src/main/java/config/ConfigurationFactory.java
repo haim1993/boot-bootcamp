@@ -1,6 +1,7 @@
 package config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.FileInputStream;
 
 public class ConfigurationFactory {

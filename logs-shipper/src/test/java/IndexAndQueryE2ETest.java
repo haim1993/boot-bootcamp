@@ -5,15 +5,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pojo.Account;
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
-
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class IndexAndQueryE2ETest {
     public static LogsShipperClient handler;

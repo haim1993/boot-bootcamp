@@ -3,10 +3,8 @@ package juice.modules;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-
 import config.ConfigurationFactory;
 import config.ElasticSearchConfiguration;
-
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;

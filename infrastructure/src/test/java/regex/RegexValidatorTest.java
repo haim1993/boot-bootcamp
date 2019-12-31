@@ -1,7 +1,6 @@
 package regex;
 
 import org.junit.Test;
-import regex.RegexValidator;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
