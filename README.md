@@ -89,6 +89,13 @@ Running the project:
 ```
 ./gradlew start
 ```
+
+Running the tests:
+
+```
+./gradlew test
+```
+
 The number of instances can be changed in the `.env` file : REPLICAS=(num-of-instances)
 
 The endpoint of the HAProxy, to view logs
