@@ -24,6 +24,7 @@ public class BaseMyBatisModule extends MyBatisModule {
 
         bindDataSourceProviderType(PooledDataSourceProvider.class);
         bindTransactionFactoryType(JdbcTransactionFactory.class);
+
         Names.bindProperties(this.binder(), getMyBatisProperties());
 
         addMapperClass(AccountMapper.class);

@@ -36,7 +36,7 @@ public class CreateAccountResource {
         String accountName = requestAccountName.getAccountName();
 
         if (!RegexValidator.isNameValid(accountName)) {
-            Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
                     .entity("The account name '" + accountName + "' contains unsupported characters").build();
         }
 

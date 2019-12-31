@@ -29,7 +29,7 @@ public class GetAccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAccountByToken(@PathParam("accountToken") String accountToken) {
         if (!RegexValidator.isTokenValid(accountToken)) {
-            Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
                     .entity("The account token contains unsupported characters").build();
         }
 

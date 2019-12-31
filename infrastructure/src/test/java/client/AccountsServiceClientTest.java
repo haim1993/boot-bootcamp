@@ -32,7 +32,27 @@ public class AccountsServiceClientTest {
     }
 
     @Test
-    public void createAccountWithExistingNameTest() {
+    public void getAccountByUnsupportedTokenTest() {
+        String token = "12521f21f12512d12egewgewhew";
+        Response res = handler.getAccountByToken(token);
+        assertTrue(res.getStatus() == HttpURLConnection.HTTP_BAD_REQUEST);
+    }
+
+    @Test
+    public void getAccountByUnauthorizedTokenTest() {
+        String token = "aaaaabbbbbcccccdddddeeeeefffffAB";
+        Response res = handler.getAccountByToken(token);
+        assertTrue(res.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED);
+    }
+
+    @Test
+    public void createUnsupportedAccountNameTest() {
+        Response res = handler.createAccount("DROP TABLE Account");
+        assertTrue(res.getStatus() == HttpURLConnection.HTTP_BAD_REQUEST);
+    }
+
+    @Test
+    public void createAccountNameWithConflictTest() {
         Response res = handler.createAccount("root");
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_CONFLICT);
     }

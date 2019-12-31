@@ -46,7 +46,7 @@ public class IndexResource {
                           @PathParam("accountToken") String accountToken) {
 
         if (!accountsServiceApi.getAccountByToken(accountToken).isPresent()) {
-            Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
+            return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
                     .entity("The account token is not authorized").build();
         }
 

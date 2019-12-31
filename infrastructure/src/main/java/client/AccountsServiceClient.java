@@ -43,7 +43,8 @@ public class AccountsServiceClient {
      * Response status code:
      *
      * HttpURLConnection.HTTP_OK ( 200 ) - The token 'accountToken' was found
-     * HttpURLConnection.HTTP_BAD_REQUEST ( 400 ) - The token 'accountToken' does not exist
+     * HttpURLConnection.HTTP_BAD_REQUEST ( 400 ) - The token 'accountToken' contains unsupported characters
+     * HttpURLConnection.HTTP_UNAUTHORIZED ( 401 ) - The given token is not authorized
      * HttpURLConnection.HTTP_NOT_FOUND ( 404 ) - The json mapper has thrown an exception
      */
     public Response getAccountByToken(String accountToken) {
@@ -62,6 +63,8 @@ public class AccountsServiceClient {
      * Response status code:
      *
      * HttpURLConnection.HTTP_OK ( 200 ) - The account was successfully created.
+     * HttpURLConnection.HTTP_BAD_REQUEST ( 400 ) - The account name 'accountName' contains unsupported characters
+     * HttpURLConnection.HTTP_NOT_FOUND ( 404 ) - The json mapper has thrown an exception
      * HttpURLConnection.HTTP_CONFLICT ( 409 ) - Account name already exists.
      */
     public Response createAccount(String accountName) {

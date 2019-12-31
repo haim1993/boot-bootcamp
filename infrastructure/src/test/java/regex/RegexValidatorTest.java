@@ -11,6 +11,7 @@ public class RegexValidatorTest {
     public void isNameValidTest() {
         assertTrue(RegexValidator.isNameValid("Aa_152215"));
         assertFalse(RegexValidator.isNameValid("Aa_*52215"));
+        assertFalse(RegexValidator.isNameValid("DROP TABLE Account"));
     }
 
     @Test
