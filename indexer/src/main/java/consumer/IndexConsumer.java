@@ -51,6 +51,7 @@ public class IndexConsumer implements Closeable {
     private void run() {
         Logger logger = LogManager.getLogger(IndexConsumer.class);
         AccountsServiceApi accountsServiceApi = new AccountsServiceApi();
+        ObjectMapper mapper = new ObjectMapper();
 
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(TOPIC));
@@ -58,8 +59,8 @@ public class IndexConsumer implements Closeable {
         while (consumingState) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
 
+            if (consumerRecords.isEmpty()) continue;
             BulkRequest request = new BulkRequest();
-            ObjectMapper mapper = new ObjectMapper();
             consumerRecords.forEach(record -> {
                 try {
                     Map<String, String> jsonMap = mapper.readValue(record.value(), Map.class);
