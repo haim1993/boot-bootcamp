@@ -65,7 +65,7 @@ public class CreateAccountResource {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity("Task Failed").build();
+        return Response.status(HttpURLConnection.HTTP_NOT_ACCEPTABLE).entity("Task Failed").build();
     }
 
     /**
