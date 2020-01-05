@@ -30,9 +30,9 @@ public class IndexAndQueryE2ETest {
         String randomMessage = Generator.generateMessage(100);
         indexCustomMessageWithToken(token, randomMessage);
 
-        await().atMost(Duration.ofSeconds(3)).until(()->{
+        await().atMost(Duration.ofSeconds(3)).untilAsserted(()->{
             String res = searchAndVerifyCustomMessageWithToken(token, randomMessage);
-            return containsOnce(res, randomMessage);
+            assertTrue(containsOnce(res, randomMessage));
         });
     }
 
@@ -47,13 +47,15 @@ public class IndexAndQueryE2ETest {
         indexCustomMessageWithToken(token1, randomMessage1);
         indexCustomMessageWithToken(token2, randomMessage2);
 
-        await().atMost(Duration.ofSeconds(3)).until(()->
-                containsOnce(searchAndVerifyCustomMessageWithToken(token1, randomMessage1), randomMessage1) &&
-                !searchAndVerifyCustomMessageWithToken(token1, randomMessage2).contains(randomMessage2));
+        await().atMost(Duration.ofSeconds(3)).untilAsserted(()-> {
+            assertTrue(containsOnce(searchAndVerifyCustomMessageWithToken(token1, randomMessage1), randomMessage1));
+            assertTrue(!searchAndVerifyCustomMessageWithToken(token1, randomMessage2).contains(randomMessage2));
+        });
 
-        await().atMost(Duration.ofSeconds(3)).until(()->
-                containsOnce(searchAndVerifyCustomMessageWithToken(token2, randomMessage2), randomMessage2) &&
-                !searchAndVerifyCustomMessageWithToken(token2, randomMessage1).contains(randomMessage1));
+        await().atMost(Duration.ofSeconds(3)).untilAsserted(()-> {
+            assertTrue(containsOnce(searchAndVerifyCustomMessageWithToken(token2, randomMessage2), randomMessage2));
+            assertTrue(!searchAndVerifyCustomMessageWithToken(token2, randomMessage1).contains(randomMessage1));
+        });
     }
 
 
