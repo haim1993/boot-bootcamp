@@ -1,12 +1,13 @@
 package jersey.rest;
 
-import client.AccountsServiceApi;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import api.AccountsServiceApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import config.GlobalParams;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import parser.JsonParser;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,8 +43,8 @@ public class IndexResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response index(RequestIndexMessage requestIndexMessage,
-                          @HeaderParam("user-agent") String userAgent,
-                          @PathParam("accountToken") String accountToken) {
+                          @HeaderParam(GlobalParams.USER_AGENT) String userAgent,
+                          @PathParam(GlobalParams.ACCOUNT_TOKEN) String accountToken) {
 
         if (!accountsServiceApi.getAccountByToken(accountToken).isPresent()) {
             return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
@@ -55,19 +56,14 @@ public class IndexResource {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null").build();
         }
 
-        try {
-            String msg = mapper.writeValueAsString(documentAsJsonMap);
+        String msg = JsonParser.toJsonString(documentAsJsonMap);
 
-            producer.send(new ProducerRecord<>(TOPIC, accountToken, msg));
+        producer.send(new ProducerRecord<>(TOPIC, accountToken, msg));
 
-            Logger logger = LogManager.getLogger(IndexResource.class);
-            logger.debug("Sent message: " + msg);
+        Logger logger = LogManager.getLogger(IndexResource.class);
+        logger.debug("Sent message: " + msg);
 
-            return Response.status(HttpURLConnection.HTTP_OK).entity("Your message has been sent successfully").build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Your message could not be delivered").build();
-        }
+        return Response.ok().entity("Your message has been sent successfully").build();
     }
 
     /**
@@ -84,7 +80,7 @@ public class IndexResource {
 
         Map<String, Object> jsonAsMap = new HashMap<>();
         jsonAsMap.put("message", msg);
-        jsonAsMap.put("User-Agent", userAgent);
+        jsonAsMap.put(GlobalParams.USER_AGENT, userAgent);
         return jsonAsMap;
     }
 
@@ -94,6 +90,5 @@ public class IndexResource {
     static class RequestIndexMessage {
         private String message;
         public String getMessage() { return this.message; }
-        public void setMessage(String message) { this.message = message; }
     }
 }

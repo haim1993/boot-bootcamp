@@ -1,6 +1,7 @@
-import client.AccountsServiceApi;
-import client.LogsShipperClient;
-import generator.Generator;
+import api.AccountsServiceApi;
+import api.LogsShipperClient;
+import generator.TestGenerator;
+import org.awaitility.Awaitility;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import pojo.Account;
@@ -12,7 +13,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,10 +28,10 @@ public class IndexAndQueryE2ETest {
     @Test
     public void indexAndSearchForMessageWithTokenTest() {
         String token = createNewAccountAndGetToken();
-        String randomMessage = Generator.generateMessage(100);
+        String randomMessage = TestGenerator.generateMessage(100);
         indexCustomMessageWithToken(token, randomMessage);
 
-        await().atMost(Duration.ofSeconds(3)).untilAsserted(()->{
+        Awaitility.await().atMost(Duration.ofSeconds(3)).untilAsserted(()->{
             String res = searchAndVerifyCustomMessageWithToken(token, randomMessage);
             assertTrue(containsOnce(res, randomMessage));
         });
@@ -41,26 +42,26 @@ public class IndexAndQueryE2ETest {
         String token1 = createNewAccountAndGetToken();
         String token2 = createNewAccountAndGetToken();
 
-        String randomMessage1 = Generator.generateMessage(100);
-        String randomMessage2 = Generator.generateMessage(100);
+        String randomMessage1 = TestGenerator.generateMessage(100);
+        String randomMessage2 = TestGenerator.generateMessage(100);
 
         indexCustomMessageWithToken(token1, randomMessage1);
         indexCustomMessageWithToken(token2, randomMessage2);
 
-        await().atMost(Duration.ofSeconds(3)).untilAsserted(()-> {
+        Awaitility.await().atMost(Duration.ofSeconds(3)).untilAsserted(()-> {
             assertTrue(containsOnce(searchAndVerifyCustomMessageWithToken(token1, randomMessage1), randomMessage1));
-            assertTrue(!searchAndVerifyCustomMessageWithToken(token1, randomMessage2).contains(randomMessage2));
+            assertFalse(searchAndVerifyCustomMessageWithToken(token1, randomMessage2).contains(randomMessage2));
         });
 
-        await().atMost(Duration.ofSeconds(3)).untilAsserted(()-> {
+        Awaitility.await().atMost(Duration.ofSeconds(3)).untilAsserted(()-> {
             assertTrue(containsOnce(searchAndVerifyCustomMessageWithToken(token2, randomMessage2), randomMessage2));
-            assertTrue(!searchAndVerifyCustomMessageWithToken(token2, randomMessage1).contains(randomMessage1));
+            assertFalse(searchAndVerifyCustomMessageWithToken(token2, randomMessage1).contains(randomMessage1));
         });
     }
 
 
     private String createNewAccountAndGetToken() {
-        Optional<Account> optionalAccount = new AccountsServiceApi("localhost", 8888).createAccount(Generator.generateName());
+        Optional<Account> optionalAccount = new AccountsServiceApi("localhost", 8888).createAccount(TestGenerator.generateName());
         assertTrue(optionalAccount.isPresent());
         return optionalAccount.get().getAccountToken();
     }

@@ -26,9 +26,9 @@ dependencies {
     compile 'org.apache.kafka:kafka-clients:2.3.1'
 
     compile project(':infrastructure:')
+    compile project(':accounts-service:client')
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.awaitility:awaitility:4.0.1'
 }
 
 shadowJar {

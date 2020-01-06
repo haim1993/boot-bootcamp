@@ -24,22 +24,5 @@ public class ConfigurationFactory {
         }
     }
 
-    /**
-     * Method to read some json configuration, with a corresponding class to inject data into.
-     *
-     * @param jsonString
-     * @param clazz - Object class
-     * @param <T> - generic class
-     * @return A loaded object with the configurations
-     */
-    public static <T> T read(String jsonString, Class<T> clazz) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(jsonString, clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
 }
 

@@ -1,6 +1,6 @@
 package jersey.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import config.GlobalParams;
 import mybatis.account.AccountMapper;
 import pojo.Account;
 import regex.RegexValidator;
@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 @Path("/account")
 public class GetAccountResource {
@@ -20,14 +22,14 @@ public class GetAccountResource {
 
     @Inject
     public GetAccountResource(AccountMapper accountMapper) {
-        this.accountMapper = accountMapper;
+        this.accountMapper = requireNonNull(accountMapper);
     }
 
     @GET
     @Path("/token/{accountToken}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccountByToken(@PathParam("accountToken") String accountToken) {
+    public Response getAccountByToken(@PathParam(GlobalParams.ACCOUNT_TOKEN) String accountToken) {
         if (!RegexValidator.isTokenValid(accountToken)) {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
                     .entity("The account token contains unsupported characters").build();
@@ -38,13 +40,7 @@ public class GetAccountResource {
             return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
                     .entity("The account token is not authorized").build();
         }
-
-        try {
-            return Response.status(HttpURLConnection.HTTP_OK).entity(account.toJsonString()).build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return Response.status(HttpURLConnection.HTTP_NOT_ACCEPTABLE).entity("Task Failed").build();
+        return Response.ok().entity(account).build();
     }
 
 }

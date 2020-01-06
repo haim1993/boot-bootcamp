@@ -7,9 +7,9 @@
         FROM Account ORDER BY accountNo
     </select>
 
-    <insert id="insertAccount" parameterType="pojo.Account">
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="account.accountNo">
         INSERT INTO Account (accountName, accountToken, accountEsIndexName)
-        VALUES (#{accountName}, #{accountToken}, #{accountEsIndexName})
+        VALUES (#{account.accountName}, #{account.accountToken}, #{account.accountEsIndexName})
     </insert>
 
     <delete id="deleteAccountById" parameterType="int">

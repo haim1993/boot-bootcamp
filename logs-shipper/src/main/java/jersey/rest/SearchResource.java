@@ -1,8 +1,7 @@
 package jersey.rest;
 
-import client.AccountsServiceApi;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import api.AccountsServiceApi;
+import config.GlobalParams;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -42,38 +41,26 @@ public class SearchResource {
     @GET
     @Path("/api/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response search(@HeaderParam ("X-ACCOUNT-TOKEN") String tokenHeader,
+    public Response search(@HeaderParam (GlobalParams.X_ACCOUNT_TOKEN) String tokenHeader,
                            @QueryParam("message") String message,
                            @QueryParam("header") String header) {
-        Tuple<String, String> messagePair    = new Tuple<>("message", message);
-        Tuple<String, String> agentPair      = new Tuple<>("User-Agent", header);
-
         Optional<Account> optionalAccount = accountsServiceApi.getAccountByToken(tokenHeader);
         if (!optionalAccount.isPresent()) {
             return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
                     .entity("The account token is not authorized").build();
         }
 
-        Logger logger = LogManager.getLogger(SearchResource.class);
-        logger.debug("Token: " + tokenHeader);
-
         SearchRequest searchRequest = new SearchRequest(optionalAccount.get().getAccountEsIndexName());
+
+        Tuple<String, String> messagePair    = new Tuple<>("message", message);
+        Tuple<String, String> agentPair      = new Tuple<>(GlobalParams.USER_AGENT, header);
         searchRequest.source(getMatchQuerySourceBuilder(messagePair, agentPair));
 
-        try {
-            SearchResponse searchResponse = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT);
-            SearchHits hits = searchResponse.getHits();
-
-            StringBuilder builder = new StringBuilder();
-            for (SearchHit hit : hits) {
-                builder.append(hit.getSourceAsString() + "\n");
-            }
-            return Response.status(HttpURLConnection.HTTP_OK).entity(builder.toString()).build();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        Optional<String> jsonStringOptional = getHitsResultsAsString(searchRequest);
+        if (!jsonStringOptional.isPresent()) {
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Bad request").build();
         }
-        return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Bad request").build();
+        return Response.ok().entity(jsonStringOptional.get()).build();
     }
 
     /**
@@ -97,4 +84,27 @@ public class SearchResource {
         return searchSourceBuilder;
     }
 
+    /**
+     * Given a SearchRequest object, we iterate through the results and concatenate them
+     * all to a single string, we ultimately return.
+     *
+     * @param searchRequest
+     * @return
+     */
+    private Optional<String> getHitsResultsAsString(SearchRequest searchRequest) {
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits hits = searchResponse.getHits();
+
+            StringBuilder builder = new StringBuilder();
+            for (SearchHit hit : hits) {
+                builder.append(hit.getSourceAsString() + "\n");
+            }
+            return Optional.ofNullable(builder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
 }

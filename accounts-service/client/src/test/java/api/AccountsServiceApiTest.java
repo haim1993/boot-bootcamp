@@ -1,32 +1,48 @@
-package client;
+package api;
 
-import config.ConfigurationFactory;
-import generator.Generator;
+import generator.TestGenerator;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import parser.JsonParser;
 import pojo.Account;
 
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
+import java.util.Optional;
 
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
-public class AccountsServiceClientTest {
+public class AccountsServiceApiTest {
 
+    public static AccountsServiceApi.AccountsServiceClient handler;
+    public static AccountsServiceApi accountsServiceApi;
 
-    public static AccountsServiceClient handler;
+    private final static String LOCALHOST = "localhost";
+    private final static int PORT = 8888;
 
     @BeforeClass
     public static void initializeGlobalParams() {
-        handler = new AccountsServiceClient("localhost", 8888);
+        handler = new AccountsServiceApi.AccountsServiceClient(LOCALHOST, PORT);
+        accountsServiceApi = new AccountsServiceApi(LOCALHOST, PORT);
     }
 
     @Test
-    public void getAccountByTokenTest() {
+    public void getAccountByTokenApiTest() {
+        Optional<Account> optionalAccount = accountsServiceApi.createAccount(TestGenerator.generateName());
+        assertTrue(optionalAccount.isPresent());
+        String token = optionalAccount.get().getAccountToken();
+        Optional<Account> ac = accountsServiceApi.getAccountByToken(token);
+        assertNotNull(ac);
+        assertTrue(token.equals(ac.get().getAccountToken()));
+    }
+
+    @Test
+    public void getAccountByTokenClientTest() {
         Account randomAccount = createRandomAccount();
         Response res = handler.getAccountByToken(randomAccount.getAccountToken());
         String jsonAccount = res.readEntity(String.class);
-        Account account = ConfigurationFactory.read(jsonAccount, Account.class);
+        Account account = JsonParser.fromJsonString(jsonAccount, Account.class);
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_OK);
         assertTrue(account.getAccountToken().equals(randomAccount.getAccountToken()));
     }
@@ -58,8 +74,9 @@ public class AccountsServiceClientTest {
     }
 
     private Account createRandomAccount() {
-        Response res = handler.createAccount(Generator.generateName());
+        Response res = handler.createAccount(TestGenerator.generateName());
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_OK);
-        return ConfigurationFactory.read(res.readEntity(String.class), Account.class);
+        return JsonParser.fromJsonString(res.readEntity(String.class), Account.class);
     }
+
 }

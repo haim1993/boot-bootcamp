@@ -10,5 +10,5 @@ public interface AccountMapper {
 
     Account getAccountByEsIndexName(@Param("accountEsIndexName") String accountEsIndexName);
 
-    int insertAccount(Account ac);
+    int insertAccount(@Param("account") Account account);
 }

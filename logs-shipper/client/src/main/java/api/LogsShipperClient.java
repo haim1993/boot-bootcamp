@@ -1,4 +1,6 @@
-package client;
+package api;
+
+import config.GlobalParams;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -48,7 +50,7 @@ public class LogsShipperClient {
                 .queryParam("message", message)
                 .queryParam("header", agent)
                 .request(MediaType.APPLICATION_JSON)
-                .header("X-ACCOUNT-TOKEN", token)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, token)
                 .get();
     }
 

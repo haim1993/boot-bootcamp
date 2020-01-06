@@ -1,7 +1,6 @@
 package jersey.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import generator.Generator;
+import generator.AccountMetaDataGenerator;
 import mybatis.account.AccountMapper;
 import pojo.Account;
 import regex.RegexValidator;
@@ -16,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
+import static java.util.Objects.requireNonNull;
+
 
 @Singleton
 @Path("/")
@@ -25,7 +26,7 @@ public class CreateAccountResource {
 
     @Inject
     public CreateAccountResource(AccountMapper accountMapper) {
-        this.accountMapper = accountMapper;
+        this.accountMapper = requireNonNull(accountMapper);
     }
 
     @POST
@@ -45,27 +46,17 @@ public class CreateAccountResource {
         }
 
         // Generate UNIQUE Token
-        String token = "";
-        do {
-            token = Generator.generateToken();
-        }
-        while (accountMapper.getAccountByToken(token) != null);
+        String token = AccountMetaDataGenerator.generateToken();
 
         // Generate UNIQUE Elasticsearch Index Name
-        String esIndexName = "";
-        do {
-            esIndexName = Generator.generateElasticsearchIndexName();
-        }
-        while (accountMapper.getAccountByEsIndexName(esIndexName) != null);
+        String esIndexName = AccountMetaDataGenerator.generateElasticsearchIndexName();
 
         Account acc = new Account(accountName, token, esIndexName);
+
+        // Mybatis sets the accountNo of the object acc
         accountMapper.insertAccount(acc);
-        try {
-            return Response.status(HttpURLConnection.HTTP_OK).entity(acc.toJsonString()).build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return Response.status(HttpURLConnection.HTTP_NOT_ACCEPTABLE).entity("Task Failed").build();
+
+        return Response.ok().entity(acc).build();
     }
 
     /**
@@ -74,7 +65,6 @@ public class CreateAccountResource {
     static class RequestAccountName {
         private String accountName;
         public String getAccountName() { return this.accountName; }
-        public void setAccountName(String accountName) { this.accountName = accountName; }
     }
 
 }

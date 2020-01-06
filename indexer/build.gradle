@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     compile project(':infrastructure:')
+    compile project(':accounts-service:client')
 
     // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
     compile 'org.apache.kafka:kafka-clients:2.3.1'
