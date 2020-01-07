@@ -1,11 +1,12 @@
 package jersey.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import api.AccountsServiceApi;
+import config.GlobalParams;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import parser.JsonParser;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,64 +25,66 @@ public class IndexResource {
 
     private static final String TOPIC = "sample";
 
-    private final KafkaProducer<Integer, String> producer;
-    private final ObjectMapper mapper;
+    private final KafkaProducer<String, String> producer;
+    private final AccountsServiceApi accountsServiceApi;
 
     @Inject
-    public IndexResource(KafkaProducer<Integer, String> producer) {
+    public IndexResource(KafkaProducer<String, String> producer) {
         this.producer = requireNonNull(producer);
-        this.mapper = new ObjectMapper();
+        this.accountsServiceApi = new AccountsServiceApi();
     }
 
     @POST
-    @Path("/api/index")
+    @Path("/api/index/{accountToken}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response index(RequestIndexMessage requestIndexMessage, @HeaderParam("user-agent") String userAgent) {
-        Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(requestIndexMessage, userAgent);
+    public Response indexMessage(IndexMessageRequest indexMessageRequest,
+                          @HeaderParam(GlobalParams.USER_AGENT) String userAgent,
+                          @PathParam(GlobalParams.ACCOUNT_TOKEN) String accountToken) {
+
+        if (!accountsServiceApi.getAccountByToken(accountToken).isPresent()) {
+            return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED)
+                    .entity("The account token is not authorized").build();
+        }
+
+        Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(indexMessageRequest, userAgent);
         if (documentAsJsonMap == null) {
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null\n").build();
+            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null").build();
         }
 
-        try {
-            String msg = mapper.writeValueAsString(documentAsJsonMap);
+        String msg = JsonParser.toJsonString(documentAsJsonMap);
 
-            producer.send(new ProducerRecord<>(TOPIC, msg));
+        producer.send(new ProducerRecord<>(TOPIC, accountToken, msg));
 
-            Logger logger = LogManager.getLogger(IndexResource.class);
-            logger.debug("Sent message: " + msg);
+        Logger logger = LogManager.getLogger(IndexResource.class);
+        logger.debug("Sent message: " + msg);
 
-            return Response.status(HttpURLConnection.HTTP_OK).entity("Your message has been sent successfully\n").build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("Your message could not be delivered\n").build();
-        }
+        return Response.ok().entity("Your message has been sent successfully").build();
     }
 
     /**
      * We construct a json message document along with all needed params, and return
      * a Map type object of it.
      *
-     * @param requestIndexMessage
+     * @param indexMessageRequest
      * @param userAgent
      * @return
      */
-    private Map<String, Object> buildDocumentAsJsonMap(RequestIndexMessage requestIndexMessage, String userAgent) {
-        String msg = requestIndexMessage.getMessage();
+    private Map<String, Object> buildDocumentAsJsonMap(IndexMessageRequest indexMessageRequest, String userAgent) {
+        String msg = indexMessageRequest.getMessage();
         if (msg == null) return null;
 
         Map<String, Object> jsonAsMap = new HashMap<>();
         jsonAsMap.put("message", msg);
-        jsonAsMap.put("User-Agent", userAgent);
+        jsonAsMap.put(GlobalParams.USER_AGENT, userAgent);
         return jsonAsMap;
     }
 
     /**
      * Custom request index message
      */
-    static class RequestIndexMessage {
+    static class IndexMessageRequest {
         private String message;
         public String getMessage() { return this.message; }
-        public void setMessage(String message) { this.message = message; }
     }
 }

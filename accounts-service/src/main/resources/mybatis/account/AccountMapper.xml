@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.account.AccountMapper">
+    <select id="getAccountList" resultType="pojo.Account">
+        SELECT *
+        FROM Account ORDER BY accountId
+    </select>
+
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="account.accountId">
+        INSERT INTO Account (accountName, accountToken, accountEsIndexName)
+        VALUES (#{account.accountName}, #{account.accountToken}, #{account.accountEsIndexName})
+    </insert>
+
+    <delete id="deleteAccountById" parameterType="int">
+        DELETE FROM Account
+        WHERE accountId=#{accountId}
+    </delete>
+
+    <select id="getAccountByToken" resultType="pojo.Account">
+        SELECT * FROM Account
+        WHERE accountToken=#{accountToken}
+    </select>
+
+    <select id="getAccountByName" resultType="pojo.Account">
+        SELECT * FROM Account
+        WHERE accountName=#{accountName}
+    </select>
+
+    <select id="getAccountByEsIndexName" resultType="pojo.Account">
+        SELECT * FROM Account
+        WHERE accountEsIndexName=#{accountEsIndexName}
+    </select>
+
+</mapper>

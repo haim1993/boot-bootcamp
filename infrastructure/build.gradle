@@ -2,9 +2,7 @@ plugins {
     id 'java'
 }
 
-version 'unspecified'
-
-sourceCompatibility = 1.8
+version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -31,6 +29,9 @@ dependencies {
 
     // Logz.io Guice
     compile 'io.logz:guice-jersey:1.0.9'
+
+    // Random String using Regex - https://github.com/mifmif/Generex
+    compile 'com.github.mifmif:generex:1.0.2'
 
     // Need these dependencies for fucked up weird errors when running tests with Jersey
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"

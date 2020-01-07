@@ -1,4 +1,6 @@
-package client;
+package api;
+
+import config.GlobalParams;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -24,11 +26,11 @@ public class LogsShipperClient {
      * @param message - the custom message that we index, along with a static user-agent.
      * @return
      */
-    public Response indexRequestWithCustomMessage(String message) {
+    public Response indexRequestWithCustomMessage(String token, String message) {
         String jsonObjectAsString = "{\"message\":\"" + message + "\"}";
         String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X)";
 
-        return webTarget.path("index")
+        return webTarget.path("index/" + token)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.USER_AGENT, userAgent)
                 .post(Entity.json(jsonObjectAsString));
@@ -41,13 +43,14 @@ public class LogsShipperClient {
      * @param message - the custom message that we wish to search for
      * @return
      */
-    public Response searchRequestWithCustomMessage(String message) {
-        String header   = "Macintosh";
+    public Response searchRequestWithCustomMessage(String token, String message) {
+        String agent   = "Macintosh";
 
         return webTarget.path("search")
                 .queryParam("message", message)
-                .queryParam("header", header)
+                .queryParam("header", agent)
                 .request(MediaType.APPLICATION_JSON)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, token)
                 .get();
     }
 

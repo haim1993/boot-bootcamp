@@ -26,9 +26,7 @@ public class LogsShipperModule extends AbstractModule {
 
     @Provides
     public LogsConfiguration getLogsConfiguration() {
-        return ConfigurationFactory.load(
-                LOGS_CONFIGURATION_FILE_NAME,
-                LogsConfiguration.class);
+        return ConfigurationFactory.load(LOGS_CONFIGURATION_FILE_NAME, LogsConfiguration.class);
     }
 
 }

@@ -1,7 +1,6 @@
 package juice.modules;
 
 import com.google.inject.AbstractModule;
-
 import consumer.IndexConsumer;
 
 public class IndexerModule extends AbstractModule {
