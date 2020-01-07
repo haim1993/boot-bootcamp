@@ -1,7 +1,6 @@
 package jersey.rest;
 
 import api.AccountsServiceApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import config.GlobalParams;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -28,21 +27,18 @@ public class IndexResource {
 
     private final KafkaProducer<String, String> producer;
     private final AccountsServiceApi accountsServiceApi;
-    private final ObjectMapper mapper;
-
 
     @Inject
     public IndexResource(KafkaProducer<String, String> producer) {
         this.producer = requireNonNull(producer);
         this.accountsServiceApi = new AccountsServiceApi();
-        this.mapper = new ObjectMapper();
     }
 
     @POST
     @Path("/api/index/{accountToken}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response index(RequestIndexMessage requestIndexMessage,
+    public Response indexMessage(IndexMessageRequest indexMessageRequest,
                           @HeaderParam(GlobalParams.USER_AGENT) String userAgent,
                           @PathParam(GlobalParams.ACCOUNT_TOKEN) String accountToken) {
 
@@ -51,7 +47,7 @@ public class IndexResource {
                     .entity("The account token is not authorized").build();
         }
 
-        Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(requestIndexMessage, userAgent);
+        Map<String, Object> documentAsJsonMap = buildDocumentAsJsonMap(indexMessageRequest, userAgent);
         if (documentAsJsonMap == null) {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity("The given object is null").build();
         }
@@ -70,12 +66,12 @@ public class IndexResource {
      * We construct a json message document along with all needed params, and return
      * a Map type object of it.
      *
-     * @param requestIndexMessage
+     * @param indexMessageRequest
      * @param userAgent
      * @return
      */
-    private Map<String, Object> buildDocumentAsJsonMap(RequestIndexMessage requestIndexMessage, String userAgent) {
-        String msg = requestIndexMessage.getMessage();
+    private Map<String, Object> buildDocumentAsJsonMap(IndexMessageRequest indexMessageRequest, String userAgent) {
+        String msg = indexMessageRequest.getMessage();
         if (msg == null) return null;
 
         Map<String, Object> jsonAsMap = new HashMap<>();
@@ -87,7 +83,7 @@ public class IndexResource {
     /**
      * Custom request index message
      */
-    static class RequestIndexMessage {
+    static class IndexMessageRequest {
         private String message;
         public String getMessage() { return this.message; }
     }

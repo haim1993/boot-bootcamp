@@ -39,7 +39,7 @@ You must have Docker installed on your system to build and run the containers.
       "logMessage": "boot boot"
   }
   ```
-  Create a class `ServerConfiguration`  that will hold the configuration parameters as private members
+  Create a class `ServerJerseyConfiguration`  that will hold the configuration parameters as private members
   Bind this class using guice, and use it in the appropriate places 
 
 **Part 5**

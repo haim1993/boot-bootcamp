@@ -3,6 +3,7 @@ package jersey.rest;
 import generator.AccountMetaDataGenerator;
 import mybatis.account.AccountMapper;
 import pojo.Account;
+import pojo.CreateAccountRequest;
 import regex.RegexValidator;
 
 import javax.inject.Inject;
@@ -16,7 +17,6 @@ import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
 import static java.util.Objects.requireNonNull;
-
 
 @Singleton
 @Path("/")
@@ -33,8 +33,8 @@ public class CreateAccountResource {
     @Path("/create-account")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAccount(RequestAccountName requestAccountName) {
-        String accountName = requestAccountName.getAccountName();
+    public Response createAccount(CreateAccountRequest createAccountRequest) {
+        String accountName = createAccountRequest.getAccountName();
 
         if (!RegexValidator.isNameValid(accountName)) {
             return Response.status(HttpURLConnection.HTTP_BAD_REQUEST)
@@ -53,18 +53,9 @@ public class CreateAccountResource {
 
         Account acc = new Account(accountName, token, esIndexName);
 
-        // Mybatis sets the accountNo of the object acc
+        // Mybatis sets the accountId of the object acc
         accountMapper.insertAccount(acc);
 
         return Response.ok().entity(acc).build();
     }
-
-    /**
-     * Custom request account name
-     */
-    static class RequestAccountName {
-        private String accountName;
-        public String getAccountName() { return this.accountName; }
-    }
-
 }

@@ -2,6 +2,7 @@ package api;
 
 import parser.JsonParser;
 import pojo.Account;
+import pojo.CreateAccountRequest;
 import regex.RegexValidator;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -110,10 +111,10 @@ public class AccountsServiceApi {
          * HttpURLConnection.HTTP_CONFLICT ( 409 ) - Account name already exists.
          */
         public Response createAccount(String accountName) {
-            String jsonObjectAsString = "{\"accountName\":\""+accountName+"\"}";
+            String jsonObject = JsonParser.toJsonString(new CreateAccountRequest(accountName));
             return webTarget.path("create-account")
                     .request(MediaType.APPLICATION_JSON)
-                    .post(Entity.json(jsonObjectAsString));
+                    .post(Entity.json(jsonObject));
         }
     }
 

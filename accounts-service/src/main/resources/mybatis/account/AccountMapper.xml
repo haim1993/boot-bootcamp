@@ -4,17 +4,17 @@
 <mapper namespace="mybatis.account.AccountMapper">
     <select id="getAccountList" resultType="pojo.Account">
         SELECT *
-        FROM Account ORDER BY accountNo
+        FROM Account ORDER BY accountId
     </select>
 
-    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="account.accountNo">
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="account.accountId">
         INSERT INTO Account (accountName, accountToken, accountEsIndexName)
         VALUES (#{account.accountName}, #{account.accountToken}, #{account.accountEsIndexName})
     </insert>
 
     <delete id="deleteAccountById" parameterType="int">
         DELETE FROM Account
-        WHERE accountNo=#{accountNo}
+        WHERE accountId=#{accountId}
     </delete>
 
     <select id="getAccountByToken" resultType="pojo.Account">

@@ -1,6 +1,6 @@
 package config;
 
-public class ServerConfiguration {
+public class ServerJerseyConfiguration {
     private int port;
 
     public int getPort() { return this.port; }

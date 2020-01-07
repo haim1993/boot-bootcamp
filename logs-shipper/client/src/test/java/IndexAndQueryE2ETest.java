@@ -18,11 +18,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class IndexAndQueryE2ETest {
-    public static LogsShipperClient handler;
+    public static LogsShipperClient logsShipperClient;
 
     @BeforeClass
     public static void initializeGlobalParams() {
-        handler = new LogsShipperClient();
+        logsShipperClient = new LogsShipperClient();
     }
 
     @Test
@@ -67,13 +67,13 @@ public class IndexAndQueryE2ETest {
     }
 
     private void indexCustomMessageWithToken(String token, String customMessage) {
-        Response indexResponse1 = handler.indexRequestWithCustomMessage(token, customMessage);
+        Response indexResponse1 = logsShipperClient.indexRequestWithCustomMessage(token, customMessage);
         assertNotNull(indexResponse1);
         assertTrue(indexResponse1.getStatus() == HttpURLConnection.HTTP_OK);
     }
 
     private String searchAndVerifyCustomMessageWithToken(String token, String customMessage) {
-        Response searchResponse = handler.searchRequestWithCustomMessage(token, customMessage);
+        Response searchResponse = logsShipperClient.searchRequestWithCustomMessage(token, customMessage);
         assertNotNull(searchResponse);
         assertTrue(searchResponse.getStatus() == HttpURLConnection.HTTP_OK);
         return searchResponse.readEntity(String.class);

@@ -15,7 +15,7 @@ import static junit.framework.TestCase.assertTrue;
 
 public class AccountsServiceApiTest {
 
-    public static AccountsServiceApi.AccountsServiceClient handler;
+    public static AccountsServiceApi.AccountsServiceClient accountsServiceClient;
     public static AccountsServiceApi accountsServiceApi;
 
     private final static String LOCALHOST = "localhost";
@@ -23,7 +23,7 @@ public class AccountsServiceApiTest {
 
     @BeforeClass
     public static void initializeGlobalParams() {
-        handler = new AccountsServiceApi.AccountsServiceClient(LOCALHOST, PORT);
+        accountsServiceClient = new AccountsServiceApi.AccountsServiceClient(LOCALHOST, PORT);
         accountsServiceApi = new AccountsServiceApi(LOCALHOST, PORT);
     }
 
@@ -40,7 +40,7 @@ public class AccountsServiceApiTest {
     @Test
     public void getAccountByTokenClientTest() {
         Account randomAccount = createRandomAccount();
-        Response res = handler.getAccountByToken(randomAccount.getAccountToken());
+        Response res = accountsServiceClient.getAccountByToken(randomAccount.getAccountToken());
         String jsonAccount = res.readEntity(String.class);
         Account account = JsonParser.fromJsonString(jsonAccount, Account.class);
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_OK);
@@ -50,31 +50,31 @@ public class AccountsServiceApiTest {
     @Test
     public void getAccountByUnsupportedTokenTest() {
         String token = "12521f21f12512d12egewgewhew";
-        Response res = handler.getAccountByToken(token);
+        Response res = accountsServiceClient.getAccountByToken(token);
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     @Test
     public void getAccountByUnauthorizedTokenTest() {
         String token = "aaaaabbbbbcccccdddddeeeeefffffAB";
-        Response res = handler.getAccountByToken(token);
+        Response res = accountsServiceClient.getAccountByToken(token);
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED);
     }
 
     @Test
     public void createUnsupportedAccountNameTest() {
-        Response res = handler.createAccount("DROP TABLE Account");
+        Response res = accountsServiceClient.createAccount("DROP TABLE Account");
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     @Test
     public void createAccountNameWithConflictTest() {
-        Response res = handler.createAccount("root");
+        Response res = accountsServiceClient.createAccount("root");
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_CONFLICT);
     }
 
     private Account createRandomAccount() {
-        Response res = handler.createAccount(TestGenerator.generateName());
+        Response res = accountsServiceClient.createAccount(TestGenerator.generateName());
         assertTrue(res.getStatus() == HttpURLConnection.HTTP_OK);
         return JsonParser.fromJsonString(res.readEntity(String.class), Account.class);
     }

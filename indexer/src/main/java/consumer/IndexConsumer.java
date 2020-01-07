@@ -1,7 +1,6 @@
 package consumer;
 
 import api.AccountsServiceApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +29,7 @@ import static java.util.Objects.requireNonNull;
 @Singleton
 public class IndexConsumer implements Closeable {
 
+    private static final Logger logger = LogManager.getLogger(IndexConsumer.class);
     private static final String TOPIC = "sample";
 
     private final RestHighLevelClient elasticSearchClient;
@@ -39,7 +39,6 @@ public class IndexConsumer implements Closeable {
     private ExecutorService executorService;
 
     private final AccountsServiceApi accountsServiceApi;
-    private final ObjectMapper mapper;
 
     @Inject
     public IndexConsumer(RestHighLevelClient elasticSearchClient, KafkaConsumer<String, String> consumer) {
@@ -48,7 +47,6 @@ public class IndexConsumer implements Closeable {
         this.consumingState = true;
 
         this.accountsServiceApi = new AccountsServiceApi();
-        this.mapper = new ObjectMapper();
 
         // Run the consumer client
         this.executorService = Executors.newSingleThreadExecutor();
@@ -56,8 +54,6 @@ public class IndexConsumer implements Closeable {
     }
 
     private void run() {
-        Logger logger = LogManager.getLogger(IndexConsumer.class);
-
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(TOPIC));
 

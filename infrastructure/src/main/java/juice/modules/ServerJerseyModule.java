@@ -2,7 +2,7 @@ package juice.modules;
 
 import com.google.inject.AbstractModule;
 import config.ConfigurationFactory;
-import config.ServerConfiguration;
+import config.ServerJerseyConfiguration;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 
@@ -32,9 +32,9 @@ public class ServerJerseyModule extends AbstractModule {
      * @return
      */
     private JerseyConfiguration createJerseyConfiguration() {
-        ServerConfiguration serverConfig = ConfigurationFactory.load(
+        ServerJerseyConfiguration serverConfig = ConfigurationFactory.load(
                 serverJerseyFilePath,
-                ServerConfiguration.class);
+                ServerJerseyConfiguration.class);
 
         return JerseyConfiguration.builder()
                 .addPackage(packageName)

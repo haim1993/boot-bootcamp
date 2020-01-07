@@ -2,7 +2,7 @@ package pojo;
 
 public class Account {
 
-    private int accountNo;
+    private int accountId;
     private String accountName;
     private String accountToken;
     private String accountEsIndexName;
@@ -15,8 +15,8 @@ public class Account {
         this.accountEsIndexName = accountEsIndexName;
     }
 
-    public int getAccountNo() {
-        return accountNo;
+    public int getAccountId() {
+        return accountId;
     }
 
     public String getAccountName() {
@@ -32,6 +32,6 @@ public class Account {
     }
 
     public String toString() {
-        return getAccountNo() + ", " + getAccountName() + ", " + getAccountToken() + ", " + getAccountEsIndexName();
+        return getAccountId() + ", " + getAccountName() + ", " + getAccountToken() + ", " + getAccountEsIndexName();
     }
 }
